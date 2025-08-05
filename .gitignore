@@ -39,6 +39,7 @@ staticfiles/
 .env.production
 .env.staging
 *.env
+.env.example
 
 # Virtual Environment
 venv/
