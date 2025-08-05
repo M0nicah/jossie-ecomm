@@ -15,14 +15,17 @@
 
 #### 1. Environment Variables (Critical)
 ```bash
-# Generate a new SECRET_KEY
+# STEP 1: Generate a new SECRET_KEY (run this command locally)
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 
-# Set these environment variables:
-SECRET_KEY=<your-generated-secret-key>
-DEBUG=False
-ALLOWED_HOSTS=your-domain.com,www.your-domain.com
-DATABASE_URL=postgresql://user:pass@host:port/dbname
+# STEP 2: Set these environment variables in your hosting platform (NOT in Git):
+# SECRET_KEY=<paste-the-generated-key-here>
+# DEBUG=False
+# ALLOWED_HOSTS=<your-actual-domain.com>
+# DATABASE_URL=<will-be-provided-by-hosting-platform>
+
+# ⚠️ NEVER put actual secret keys in Git repositories!
+# These are just placeholder examples for documentation.
 ```
 
 #### 2. Database Migration
