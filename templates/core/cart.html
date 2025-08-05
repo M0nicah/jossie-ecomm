@@ -1,0 +1,521 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping Cart - Jossie Fancies{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-gradient-to-r from-primary/80 to-orange-200 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-dark mb-2">Shopping Cart</h1>
+            <p class="text-gray-600">Review your items and proceed to checkout</p>
+        </div>
+    </div>
+</section>
+
+<!-- Cart Content -->
+<section class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Loading State -->
+        <div id="cartLoading" class="text-center py-12">
+            <iframe src="https://lottie.host/embed/3b4b9a32-fbbf-492c-978d-648c5fc484ea/FmjG7f5tu2.lottie"
+                style="width: 120px; height: 120px; border: none; margin: 0 auto; display: block;"
+                frameborder="0">
+            </iframe>
+            <div class="mt-4">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange mx-auto" style="display: none;"></div>
+            </div>
+            <p class="text-gray-600 font-medium mt-2">Loading your cart...</p>
+        </div>
+
+        <!-- Empty Cart -->
+        <div id="emptyCart" class="text-center py-16 hidden">
+            <div class="max-w-lg mx-auto">
+                <!-- Lottie Animation Container -->
+                <div class="flex justify-center items-center mb-6">
+                    <iframe 
+                        src="https://lottie.host/embed/7e91a70e-0815-4aac-9fb4-9c0fc158c286/6qxmZzwtuM.lottie" 
+                        style="width: 280px; height: 280px; border: none; margin: 0 auto; display: block;"
+                        frameborder="0">
+                    </iframe>
+                </div>
+                
+                <!-- Fallback SVG with theme colors -->
+                <div class="w-40 h-40 mx-auto mb-6 bg-orange/10 rounded-full flex items-center justify-center" style="display: none;">
+                    <svg class="w-20 h-20 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5M7 13v6a2 2 0 002 2h4.5M15 19a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                </div>
+                
+                <h2 class="text-3xl font-bold text-dark mb-3">Your cart is empty</h2>
+                <p class="text-gray-600 mb-6">Start shopping to add items to your cart and upgrade your home!</p>
+                <a href="{% url 'products' %}"
+                    class="inline-block bg-gradient-to-r from-orange to-primary-dark text-white px-8 py-3 rounded-xl hover-glow transition-all transform hover:scale-105 font-semibold shadow-lg">
+                    Continue Shopping
+                </a>
+            </div>
+        </div>
+
+        <!-- Cart Items -->
+        <div id="cartContent" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Cart Items List -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="p-6 border-b">
+                            <h2 class="text-xl font-semibold text-dark">Cart Items</h2>
+                        </div>
+                        <div id="cartItemsList" class="divide-y">
+                            <!-- Cart items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+                        <h2 class="text-xl font-semibold text-dark mb-6">Order Summary</h2>
+
+                        <div class="space-y-4 mb-6">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal (<span id="summaryItemCount">0</span> items)</span>
+                                <span id="summarySubtotal" class="font-semibold">KSH 0.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Shipping</span>
+                                <span class="font-semibold text-success">KSH 450.00</span>
+                            </div>
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between text-lg">
+                                    <span class="font-semibold">Total</span>
+                                    <span id="summaryTotal" class="font-bold text-primary">KSH 0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="proceedToCheckout()" id="checkoutBtn"
+                            class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors font-semibold mb-4">
+                            Proceed to Checkout
+                        </button>
+
+                        <button onclick="clearCart()"
+                            class="w-full bg-gray-100 text-gray-700 py-2 px-6 rounded-lg hover:bg-gray-200 transition-colors">
+                            Clear Cart
+                        </button>
+
+                        <div class="mt-6 text-center">
+                            <a href="{% url 'products' %}" class="text-primary hover:text-orange-600 transition-colors">
+                                ← Continue Shopping
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Checkout Modal -->
+<div id="checkoutModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-dark">Checkout</h2>
+                <button onclick="closeCheckoutModal()" class="text-gray-500 hover:text-gray-700 p-2">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="checkoutForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                        <input type="text" id="firstName" name="first_name" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                        <input type="text" id="lastName" name="last_name" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                    <input type="email" id="email" name="email" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+
+
+                <div>
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Order Notes
+                        (Optional)</label>
+                    <textarea id="notes" name="notes" rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Any special instructions for your order..."></textarea>
+                </div>
+
+                <!-- Order Summary in Modal -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-semibold mb-2">Order Summary</h3>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Subtotal:</span>
+                        <span id="modalSubtotal">KSH 0.00</span>
+                    </div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Shipping:</span>
+                        <span class="text-success">KSH 450.00</span>
+                    </div>
+                    <div class="border-t pt-2 mt-2">
+                        <div class="flex justify-between font-semibold">
+                            <span>Total:</span>
+                            <span id="modalTotal" class="text-primary">KSH 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <div class="flex items-center mb-2">
+                        <svg class="h-5 w-5 text-success mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                            </path>
+                        </svg>
+                        <span class="font-semibold text-success">WhatsApp Checkout</span>
+                    </div>
+                    <p class="text-sm text-gray-700">Your order details will be sent via WhatsApp for confirmation and
+                        payment processing.</p>
+                </div>
+
+                <div class="flex space-x-4">
+                    <button type="button" onclick="closeCheckoutModal()"
+                        class="flex-1 bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submitOrderBtn"
+                        class="flex-1 bg-primary text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors font-semibold">
+                        Place Order via WhatsApp
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Order Success Modal -->
+<div id="orderSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl max-w-md w-full mx-4">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 bg-success/20 rounded-full flex items-center justify-center">
+                <svg class="h-8 w-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-dark mb-2">Order Placed Successfully!</h2>
+            <p class="text-gray-600 mb-4">Your order has been submitted and you will receive a WhatsApp message shortly
+                for confirmation.</p>
+            <p class="text-sm text-gray-500 mb-6">Order ID: <span id="orderIdDisplay"
+                    class="font-mono font-semibold"></span></p>
+            <button onclick="closeOrderSuccessModal()"
+                class="bg-primary text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors">
+                Continue Shopping
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentCart = { items: [], total_items: 0, total_price: 0 };
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+        loadCartData();
+        setupEventListeners();
+    });
+
+    function setupEventListeners() {
+        // Checkout form
+        document.getElementById('checkoutForm').addEventListener('submit', handleCheckoutSubmit);
+
+        // Close modals on outside click
+        document.getElementById('checkoutModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeCheckoutModal();
+            }
+        });
+
+        document.getElementById('orderSuccessModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeOrderSuccessModal();
+            }
+        });
+    }
+
+    async function loadCartData() {
+        try {
+            showLoading(true);
+            currentCart = await apiCall('/api/cart/');
+            renderCart();
+        } catch (error) {
+            console.error('Error loading cart:', error);
+            showToast('Error loading cart', 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function renderCart() {
+        const loading = document.getElementById('cartLoading');
+        const emptyCart = document.getElementById('emptyCart');
+        const cartContent = document.getElementById('cartContent');
+
+        loading.classList.add('hidden');
+
+        if (!currentCart.items || currentCart.items.length === 0) {
+            emptyCart.classList.remove('hidden');
+            cartContent.classList.add('hidden');
+            return;
+        }
+
+        emptyCart.classList.add('hidden');
+        cartContent.classList.remove('hidden');
+
+        renderCartItems();
+        updateOrderSummary();
+    }
+
+    function renderCartItems() {
+        const container = document.getElementById('cartItemsList');
+
+        container.innerHTML = currentCart.items.map(item => `
+            <div class="p-6 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <div class="flex-shrink-0">
+                    <img src="${item.product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                         alt="${item.product.name}" 
+                         class="w-20 h-20 object-cover rounded-lg">
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-semibold text-dark mb-1">${item.product.name}</h3>
+                    <p class="text-gray-600 text-sm mb-2">${item.product.short_description}</p>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-lg font-bold text-primary">KSH ${parseFloat(item.product.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        ${item.product.original_price ? `<span class="text-gray-500 line-through text-sm">KSH ${parseFloat(item.product.original_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>` : ''}
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">SKU: ${item.product.sku}</p>
+                </div>
+                
+                <div class="flex flex-col items-end space-y-2">
+                    <!-- Quantity Controls -->
+                    <div class="flex items-center space-x-2">
+                        <button onclick="updateItemQuantity(${item.product.id}, ${item.quantity - 1})" 
+                                class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                                ${item.quantity <= 1 ? 'disabled' : ''}>
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                            </svg>
+                        </button>
+                        <span class="w-12 text-center font-semibold">${item.quantity}</span>
+                        <button onclick="updateItemQuantity(${item.product.id}, ${item.quantity + 1})" 
+                                class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                                ${item.product.stock_quantity <= item.quantity ? 'disabled' : ''}>
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Item Total -->
+                    <div class="text-right">
+                        <p class="text-lg font-bold text-dark">KSH ${(parseFloat(item.product.price) * item.quantity).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                        ${item.product.stock_quantity <= 5 ? `<p class="text-xs text-yellow-600">Only ${item.product.stock_quantity} left!</p>` : ''}
+                    </div>
+                    
+                    <!-- Remove Button -->
+                    <button onclick="removeCartItem(${item.product.id})" 
+                            class="text-red-500 hover:text-red-700 text-sm transition-colors">
+                        Remove
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateOrderSummary() {
+        const itemCount = document.getElementById('summaryItemCount');
+        const subtotal = document.getElementById('summarySubtotal');
+        const total = document.getElementById('summaryTotal');
+        const modalSubtotal = document.getElementById('modalSubtotal');
+        const modalTotal = document.getElementById('modalTotal');
+
+        const subtotalPrice = parseFloat(currentCart.total_price || 0);
+        const shippingFee = 450.00;
+        const totalPrice = subtotalPrice + shippingFee;
+
+        itemCount.textContent = currentCart.total_items || 0;
+        subtotal.textContent = `KSH ${subtotalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        total.textContent = `KSH ${totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        modalSubtotal.textContent = `KSH ${subtotalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        modalTotal.textContent = `KSH ${totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    async function updateItemQuantity(productId, newQuantity) {
+        if (newQuantity <= 0) {
+            removeCartItem(productId);
+            return;
+        }
+
+        try {
+            await updateCartItem(productId, newQuantity);
+            await loadCartData();
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+        }
+    }
+
+    async function removeCartItem(productId) {
+        try {
+            await removeFromCart(productId);
+            await loadCartData();
+        } catch (error) {
+            console.error('Error removing item:', error);
+        }
+    }
+
+    async function clearCart() {
+        if (!confirm('Are you sure you want to clear your cart?')) {
+            return;
+        }
+
+        try {
+            showLoading(true);
+            await apiCall('/api/cart/clear/', { method: 'DELETE' });
+            await loadCartData();
+            showToast('Cart cleared successfully', 'success');
+        } catch (error) {
+            console.error('Error clearing cart:', error);
+            showToast('Error clearing cart', 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function proceedToCheckout() {
+        if (!currentCart.items || currentCart.items.length === 0) {
+            showToast('Your cart is empty', 'error');
+            return;
+        }
+
+        updateOrderSummary();
+        document.getElementById('checkoutModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeCheckoutModal() {
+        document.getElementById('checkoutModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    async function handleCheckoutSubmit(e) {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const orderData = {
+            first_name: formData.get('first_name'),
+            last_name: formData.get('last_name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            notes: formData.get('notes') || ''
+        };
+
+        try {
+            showLoading(true);
+            const order = await apiCall('/api/orders/', {
+                method: 'POST',
+                body: JSON.stringify(orderData)
+            });
+
+            // Show success modal
+            document.getElementById('orderIdDisplay').textContent = order.order_id;
+            closeCheckoutModal();
+            document.getElementById('orderSuccessModal').classList.remove('hidden');
+
+            // Reload cart (should be empty now)
+            await loadCartData();
+
+            // Create WhatsApp message
+            createWhatsAppMessage(order);
+
+        } catch (error) {
+            console.error('Error placing order:', error);
+            showToast('Error placing order. Please try again.', 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function createWhatsAppMessage(order) {
+        // Use the WhatsApp URL provided by the backend
+        if (order.whatsapp_url) {
+            setTimeout(() => {
+                window.open(order.whatsapp_url, '_blank');
+            }, 2000);
+        } else {
+            // Fallback to manual message creation if URL not provided
+            const message = `New Order from Jossie Fancies!
+
+ Order ID: ${order.order_id}
+ Customer: ${order.first_name} ${order.last_name}
+ Email: ${order.email}
+ Phone: ${order.phone}
+
+ Order Items:
+${order.items.map(item => `• ${item.product_name} x${item.quantity} - KSH ${parseFloat(item.product_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`).join('\n')}
+
+ Total: KSH ${parseFloat(order.total_amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
+ Delivery Address:
+${order.address}
+${order.city}, ${order.postal_code}
+
+${order.notes ? `Notes: ${order.notes}` : ''}
+
+Please confirm this order to proceed with payment and delivery.`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappNumber = order.whatsapp_number || '+254794748719';
+            const whatsappUrl = `https://wa.me/${whatsappNumber.replace('+', '')}?text=${encodedMessage}`;
+
+            setTimeout(() => {
+                window.open(whatsappUrl, '_blank');
+            }, 2000);
+        }
+    }
+
+    function closeOrderSuccessModal() {
+        document.getElementById('orderSuccessModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        window.location.href = '{% url "products" %}';
+    }
+
+    function showLoading(show) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (show) {
+            overlay.classList.remove('hidden');
+        } else {
+            overlay.classList.add('hidden');
+        }
+    }
+</script>
+{% endblock %}
