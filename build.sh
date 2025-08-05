@@ -13,10 +13,10 @@ npm run build-css-prod
 
 # Collect Django static files
 echo "📁 Collecting Django static files..."
-python manage.py collectstatic --noinput
+python3 manage.py collectstatic --noinput
 
 # Run Django migrations
 echo "🗄️ Running Django migrations..."
-python manage.py migrate
+python3 manage.py migrate
 
 echo "✅ Build complete! Your site is ready for production."
