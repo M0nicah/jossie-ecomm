@@ -1,0 +1,500 @@
+{% extends 'base.html' %}
+
+{% block title %}Products - Jossie Fancies{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="relative py-16 overflow-hidden" style="background: url('https://images.unsplash.com/photo-1634973357973-f2ed2657db3c?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8b25saW5lJTIwc2hvcHxlbnwwfDB8MHx8fDA%3D') center/cover;">
+    <!-- Black Overlay -->
+    <div class="absolute inset-0 bg-black/60"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center modern-card p-8 rounded-2xl border border-orange/30 bg-white/10 backdrop-blur-sm max-w-3xl mx-auto">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Shop</h1>
+            <p class="text-xl text-white/90 max-w-2xl mx-auto">Discover our curated collection of premium home goods,
+                carefully selected for quality and style. </p>
+        </div>
+    </div>
+</section>
+
+<!-- Search and Filters -->
+<section class="bg-white/50 backdrop-blur-sm border-b border-gray-200 sticky top-[70px] z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <form method="get" id="filterForm" class="w-full">
+            <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-full lg:max-w-md order-1 lg:order-1">
+                    <div class="relative">
+                        <input type="text" name="search" id="searchInput" placeholder="Search products..." value="{{ current_filters.search|default:'' }}"
+                            class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange focus:border-orange focus:outline-none text-gray-800 placeholder-gray-500">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center order-2 lg:order-2">
+                    <!-- Category Filter -->
+                    <div class="relative min-w-0 flex-shrink-0">
+                        <select name="category" id="categoryFilter"
+                            class="appearance-none border border-orange-300 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-orange focus:border-orange focus:outline-none text-gray-800 w-full sm:w-auto min-w-[160px]">
+                            <option value="" class="text-gray-800">All Categories</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if current_filters.category == category.id|stringformat:"s" %}selected{% endif %} class="text-gray-800">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Sort Filter -->
+                    <div class="relative min-w-0 flex-shrink-0">
+                        <select name="sort" id="sortFilter"
+                            class="appearance-none bg-white border border-gray-300 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-orange focus:border-orange focus:outline-none text-gray-800 w-full sm:w-auto min-w-[160px]">
+                            <option value="-created_at" {% if current_filters.sort == "-created_at" %}selected{% endif %} class="bg-white text-gray-800">Newest First</option>
+                            <option value="name" {% if current_filters.sort == "name" %}selected{% endif %} class="bg-white text-gray-800">Name A-Z</option>
+                            <option value="price_low" {% if current_filters.sort == "price_low" %}selected{% endif %} class="bg-white text-gray-800">Price: Low to High</option>
+                            <option value="price_high" {% if current_filters.sort == "price_high" %}selected{% endif %} class="bg-white text-gray-800">Price: High to Low</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Featured Filter -->
+                    <label class="flex items-center space-x-2 cursor-pointer modern-card px-4 py-3 rounded-xl border border-gray-200 hover:border-orange/30 transition-all whitespace-nowrap">
+                        <input type="checkbox" name="featured" value="true" id="featuredFilter" {% if current_filters.featured == "true" %}checked{% endif %}
+                            class="rounded border-gray-300 text-orange focus:ring-orange bg-white flex-shrink-0">
+                        <span class="text-gray-800 text-sm">Featured Only</span>
+                    </label>
+
+                    <!-- Clear Filters -->
+                    <a href="{% url 'products' %}"
+                        class="px-4 py-3 text-gray-600 hover:text-orange transition-colors rounded-xl text-center whitespace-nowrap text-sm">
+                        Clear Filters
+                    </a>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
+</section>
+
+<!-- Products Grid -->
+<section class="py-8 bg-gray-50 relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute  inset-0 opacity-5">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="productGrid" width="60" height="60" patternUnits="userSpaceOnUse">
+                    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#FF9A00" stroke-width="1" />
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#productGrid)" />
+        </svg>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <!-- Results Info -->
+        {% if products %}
+            <div class="mb-6 text-gray-600">
+                Showing {{ products|length }} of {{ total_products }} products
+                {% if products.has_previous or products.has_next %}
+                    (Page {{ products.number }} of {{ products.paginator.num_pages }})
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <!-- Products Grid -->
+        {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for product in products %}
+                    <div class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-orange/20">
+                        <div class="relative overflow-hidden bg-gray-50">
+                            <img src="{% if product.primary_image %}{{ product.primary_image.image.url }}{% else %}/static/images/placeholder.svg{% endif %}" 
+                                 alt="{{ product.name }}" 
+                                 class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500 cursor-pointer"
+                                 onclick="openQuickView({{ product.id }})">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            
+                            <div class="absolute top-2 left-2 flex flex-col space-y-1">
+                                {% if product.is_featured %}
+                                    <span class="bg-orange text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">Featured</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="absolute top-2 right-2">
+                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm {% if product.stock_status == 'in_stock' %}bg-emerald-500/20 text-emerald-700 border border-emerald-500/30{% elif product.stock_status == 'low_stock' %}bg-amber-500/20 text-amber-700 border border-amber-500/30{% elif product.stock_status == 'out_of_stock' %}bg-red-500/20 text-red-700 border border-red-500/30{% else %}bg-slate-500/20 text-slate-700 border border-slate-500/30{% endif %}">
+                                    <span class="w-1.5 h-1.5 rounded-full mr-1.5 {% if product.stock_status == 'in_stock' %}bg-emerald-500{% elif product.stock_status == 'low_stock' %}bg-amber-500{% elif product.stock_status == 'out_of_stock' %}bg-red-500{% else %}bg-slate-500{% endif %}"></span>
+                                    {{ product.stock_status|upper }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 flex flex-col h-auto min-h-[200px]">
+                            <div class="flex-grow">
+                                <div class="mb-2">
+                                    <span class="text-xs text-orange font-semibold uppercase tracking-wider">{{ product.category.name }}</span>
+                                </div>
+                                
+                                <h3 class="font-bold text-gray-800 mb-2 text-sm leading-tight group-hover:text-orange transition-colors cursor-pointer line-clamp-2" onclick="openQuickView({{ product.id }})">{{ product.name }}</h3>
+                                
+                                <p class="text-gray-600 text-xs mb-3 line-clamp-2 leading-relaxed">{{ product.short_description }}</p>
+                            </div>
+                            
+                            <div class="mt-auto space-y-3">
+                                <div class="text-sm font-bold text-orange">KSH {{ product.price|floatformat:2 }}</div>
+                                
+                                <div class="flex items-center gap-2">
+                                    <button onclick="addToCart({{ product.id }})" 
+                                            class="flex-1 bg-gradient-to-r from-orange to-primary-dark text-white px-3 py-2 rounded-lg hover-glow transition-all duration-300 font-semibold text-xs transform hover:scale-105 {% if product.stock_status == 'out_of_stock' %}opacity-50 cursor-not-allowed{% endif %}"
+                                            {% if product.stock_status == 'out_of_stock' %}disabled{% endif %}>
+                                        {% if product.stock_status == 'out_of_stock' %}Out of Stock{% else %}Add to Cart{% endif %}
+                                    </button>
+
+                                    <button onclick="openQuickView({{ product.id }})" 
+                                            class="flex-shrink-0 text-gray-500 hover:text-orange transition-colors p-2 rounded-lg hover:bg-gray-50"
+                                            title="Quick View">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- No Results -->
+            <div class="text-center py-12">
+                <div class="modern-card p-8 rounded-2xl border border-gray-200 max-w-md mx-auto">
+                    <iframe src="https://lottie.host/embed/234d9eef-555d-467a-906a-25b15556944f/TLxZDiIxxm.lottie"
+                        style="width: 120px; height: 120px; border: none; margin: 0 auto; display: block;"
+                        frameborder="0">
+                    </iframe>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">No products found</h3>
+                    <p class="text-gray-600 mb-4">We couldn't find any products matching your search. Try adjusting your filters or search terms.</p>
+                    <a href="{% url 'products' %}"
+                        class="bg-gradient-to-r from-orange to-primary-dark text-white px-6 py-3 rounded-xl hover-glow transition-all font-semibold transform hover:scale-105">
+                        Clear Filters
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+            <div class="flex justify-center mt-8">
+                <nav class="flex items-center space-x-2">
+                    {% if products.has_previous %}
+                        <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.featured %}featured={{ request.GET.featured }}&{% endif %}page={{ products.previous_page_number }}"
+                           class="px-3 py-2 text-gray-500 hover:text-orange border border-gray-300 rounded-lg hover:border-orange/30 transition-all">
+                            Previous
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in products.paginator.page_range %}
+                        {% if products.number == num %}
+                            <span class="px-3 py-2 bg-orange text-white rounded-lg font-semibold">{{ num }}</span>
+                        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                            <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.featured %}featured={{ request.GET.featured }}&{% endif %}page={{ num }}"
+                               class="px-3 py-2 text-gray-500 hover:text-orange border border-gray-300 rounded-lg hover:border-orange/30 transition-all">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                        <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.featured %}featured={{ request.GET.featured }}&{% endif %}page={{ products.next_page_number }}"
+                           class="px-3 py-2 text-gray-500 hover:text-orange border border-gray-300 rounded-lg hover:border-orange/30 transition-all">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Product Quick View Modal -->
+<div id="quickViewModal"
+    class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="modern-card rounded-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200">
+        <div id="quickViewContent" class="p-6">
+            <!-- Quick view content will be loaded here -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+        setupEventListeners();
+    });
+
+    function setupEventListeners() {
+        // Progressive enhancement for search and filters
+        const form = document.getElementById('filterForm');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const featuredFilter = document.getElementById('featuredFilter');
+
+        // Auto-submit form on filter changes for progressive enhancement
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', function() {
+                form.submit();
+            });
+        }
+        
+        if (sortFilter) {
+            sortFilter.addEventListener('change', function() {
+                form.submit();
+            });
+        }
+        
+        if (featuredFilter) {
+            featuredFilter.addEventListener('change', function() {
+                form.submit();
+            });
+        }
+
+        // Debounced search submission
+        if (searchInput) {
+            searchInput.addEventListener('input', debounce(function() {
+                form.submit();
+            }, 500));
+        }
+
+        // Close modal on outside click
+        const quickViewModal = document.getElementById('quickViewModal');
+        if (quickViewModal) {
+            quickViewModal.addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeQuickView();
+                }
+            });
+        }
+    }
+
+    // Helper function to get stock status CSS classes
+    function getStockStatusClass(status) {
+        switch (status) {
+            case 'in_stock':
+                return 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 shadow-sm';
+            case 'low_stock':
+                return 'bg-amber-500/20 text-amber-700 border border-amber-500/30 shadow-sm';
+            case 'out_of_stock':
+                return 'bg-red-500/20 text-red-700 border border-red-500/30 shadow-sm';
+            default:
+                return 'bg-slate-500/20 text-slate-700 border border-slate-500/30 shadow-sm';
+        }
+    }
+
+    async function openQuickView(productId) {
+        if (!productId) {
+            showToast('Invalid product ID', 'error');
+            return;
+        }
+
+        const modal = document.getElementById('quickViewModal');
+        const content = document.getElementById('quickViewContent');
+        
+        if (!modal || !content) {
+            console.error('Quick view modal elements not found');
+            return;
+        }
+
+        try {
+            showLoading(true);
+            
+            // Show loading state in modal
+            content.innerHTML = `
+                <div class="flex justify-center items-center h-64">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-orange"></div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            const product = await apiCall(`/api/products/${productId}/`);
+            
+            if (!product) {
+                throw new Error('Product not found');
+            }
+
+            // Helper function to safely format price
+            const formatPrice = (price) => {
+                const numPrice = parseFloat(price) || 0;
+                return numPrice.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            };
+
+            // Helper function to escape HTML
+            const escapeHtml = (text) => {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            };
+
+            // Get primary image with fallback
+            const primaryImageSrc = product.primary_image?.image || 
+                                  (product.images && product.images[0]?.image) || 
+                                  '/static/images/placeholder.svg';
+
+            content.innerHTML = `
+                <div class="flex justify-between items-start mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">${escapeHtml(product.name || 'Product')}</h2>
+                    <button onclick="closeQuickView()" class="text-gray-600 hover:text-orange p-2 rounded-lg transition-all" aria-label="Close quick view">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="mb-4">
+                            <img id="quickview-main-image" 
+                                 src="${primaryImageSrc}" 
+                                 alt="${escapeHtml(product.name || 'Product image')}" 
+                                 class="w-full h-80 object-cover rounded-lg"
+                                 onerror="this.src='/static/images/placeholder.svg'">
+                        </div>
+                        ${product.images && product.images.length > 1 ? `
+                            <div class="grid grid-cols-4 gap-2">
+                                ${product.images.map((image, index) => `
+                                    <img src="${image.image}" 
+                                         alt="${escapeHtml(image.alt_text || `${product.name} image ${index + 1}`)}" 
+                                         class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity border-2 ${image.image === primaryImageSrc ? 'border-orange' : 'border-transparent'}"
+                                         onclick="changeMainImage('${image.image}', this)"
+                                         onerror="this.style.display='none'">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div>
+                        <div class="mb-4">
+                            <span class="text-sm text-orange uppercase tracking-wide">${escapeHtml(product.category?.name || 'Uncategorized')}</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <span class="text-3xl font-bold text-orange">KES ${formatPrice(product.price)}</span>
+                                ${product.original_price ? `<span class="text-xl text-gray-400 line-through">KES ${formatPrice(product.original_price)}</span>` : ''}
+                                ${product.has_discount && product.discount_percentage ? `<span class="bg-red-500/90 backdrop-blur-sm text-white px-2 py-1 rounded text-sm font-semibold">-${product.discount_percentage}% OFF</span>` : ''}
+                            </div>
+                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${getStockStatusClass(product.stock_status)}">
+                                <span class="w-2 h-2 rounded-full mr-2 ${product.stock_status === 'in_stock' ? 'bg-emerald-500' : product.stock_status === 'low_stock' ? 'bg-amber-500' : product.stock_status === 'out_of_stock' ? 'bg-red-500' : 'bg-slate-500'}"></span>
+                                ${(product.stock_status || 'unknown').replace('_', ' ').toUpperCase()}
+                            </span>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-600 leading-relaxed">${escapeHtml(product.description || 'No description available')}</p>
+                        </div>
+                        
+                        ${product.weight || product.dimensions ? `
+                            <div class="mb-6 modern-card p-4 rounded-lg border border-gray-200">
+                                <h4 class="font-semibold mb-2 text-gray-800">Product Details</h4>
+                                ${product.weight ? `<p class="text-sm text-gray-600 mb-1">Weight: ${product.weight} kg</p>` : ''}
+                                ${product.dimensions ? `<p class="text-sm text-gray-600">Dimensions: ${escapeHtml(product.dimensions)}</p>` : ''}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex space-x-4 mb-4">
+                            <button onclick="addToCart(${product.id}); closeQuickView();" 
+                                    class="flex-1 bg-gradient-to-r from-orange to-primary-dark text-white py-3 px-6 rounded-xl hover-glow transition-all font-bold ${product.stock_status === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}
+                                    aria-label="Add ${escapeHtml(product.name)} to cart">
+                                ${product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
+                            </button>
+                        </div>
+                        
+                        <div class="text-sm text-gray-500">
+                            <p>SKU: ${escapeHtml(product.sku || 'N/A')}</p>
+                            <p>Stock: ${product.stock_quantity || 0} available</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        } catch (error) {
+            console.error('Error loading product details:', error);
+            content.innerHTML = `
+                <div class="flex justify-between items-start mb-6">
+                    <h2 class="text-xl font-bold text-red-600">Error Loading Product</h2>
+                    <button onclick="closeQuickView()" class="text-gray-600 hover:text-orange p-2 rounded-lg transition-all">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="text-center py-8">
+                    <p class="text-gray-600">Unable to load product details. Please try again.</p>
+                    <button onclick="openQuickView(${productId})" class="mt-4 bg-orange text-white px-4 py-2 rounded hover:bg-orange-600 transition-colors">
+                        Retry
+                    </button>
+                </div>
+            `;
+            showToast('Error loading product details', 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function closeQuickView() {
+        document.getElementById('quickViewModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function changeMainImage(imageUrl, clickedThumbnail) {
+        const mainImage = document.getElementById('quickview-main-image');
+        if (mainImage && imageUrl) {
+            mainImage.src = imageUrl;
+            
+            // Update thumbnail borders to show active state
+            if (clickedThumbnail) {
+                const thumbnails = document.querySelectorAll('#quickViewContent .grid img');
+                thumbnails.forEach(thumb => {
+                    thumb.classList.remove('border-orange');
+                    thumb.classList.add('border-transparent');
+                });
+                clickedThumbnail.classList.remove('border-transparent');
+                clickedThumbnail.classList.add('border-orange');
+            }
+        }
+    }
+
+
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+</script>
+{% endblock %}

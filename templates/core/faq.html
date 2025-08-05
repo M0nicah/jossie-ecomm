@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block title %}Frequently Asked Questions - Jossie Fancies{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-primary/80 to-orange-200 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-dark mb-6">Frequently Asked Questions</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Find answers to common questions about our products, shipping, returns, and more.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Categories -->
+<section class="py-16 bg-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Quick Navigation -->
+        <div class="flex flex-wrap justify-center gap-4 mb-12">
+            <button onclick="scrollToSection('ordering')" class="px-6 py-3 bg-primary/10 text-orange rounded-lg hover:bg-primary hover:text-white transition-colors">
+                Ordering & Payment
+            </button>
+            <button onclick="scrollToSection('shipping')" class="px-6 py-3 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-white transition-colors">
+                Shipping & Delivery
+            </button>
+            <button onclick="scrollToSection('returns')" class="px-6 py-3 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-white transition-colors">
+                Returns & Exchanges
+            </button>
+            <button onclick="scrollToSection('products')" class="px-6 py-3 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-white transition-colors">
+                Products & Quality
+            </button>
+        </div>
+
+        <!-- Ordering & Payment -->
+        <div id="ordering" class="mb-16">
+            <h2 class="text-3xl font-bold text-dark mb-8 text-center">Ordering & Payment</h2>
+            
+            <div class="space-y-6">
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">How do I place an order?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Placing an order is simple! Browse our products, add items to your cart, and proceed to checkout. You'll be redirected to WhatsApp to complete your order with our team. We'll confirm product availability, calculate delivery costs, and arrange payment.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">What payment methods do you accept?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>We accept multiple payment methods including:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li>M-Pesa (Mobile Money)</li>
+                            <li>Bank transfers</li>
+                            <li>Cash on delivery (within Nairobi)</li>
+                            <li>Visa and Mastercard (through secure payment gateways)</li>
+                        </ul>
+                        <p class="mt-2">Payment details will be confirmed during your WhatsApp conversation with our team.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">Can I modify or cancel my order?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Yes, you can modify or cancel your order before it's processed and shipped. Contact us immediately via WhatsApp at +254 790420843. Once an order is shipped, modifications are not possible, but you can return items according to our return policy.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipping & Delivery -->
+        <div id="shipping" class="mb-16">
+            <h2 class="text-3xl font-bold text-dark mb-8 text-center">Shipping & Delivery</h2>
+            
+            <div class="space-y-6">
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">What are your delivery areas?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>We deliver across Kenya with special focus on:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li><strong>Nairobi:</strong> Same-day or next-day delivery</li>
+                            <li><strong>Major towns:</strong> Mombasa, Kisumu, Nakuru, Eldoret (2-3 days)</li>
+                            <li><strong>Other areas:</strong> 3-7 days depending on location</li>
+                        </ul>
+                        <p class="mt-2">Delivery costs vary by location and will be calculated during order confirmation.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">How much does shipping cost?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Shipping costs depend on your location and order size:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li><strong>Within Nairobi:</strong> KES 200-500</li>
+                            <li><strong>Major towns:</strong> KES 300-800</li>
+                            <li><strong>Remote areas:</strong> KES 500-1,500</li>
+                        </ul>
+                        <p class="mt-2"><strong>Free delivery</strong> for orders above KES 10,000 within Nairobi!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">How can I track my order?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Once your order is shipped, we'll provide you with tracking information via WhatsApp. You can track your package using the courier's tracking system. We also send updates at key delivery milestones.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Returns & Exchanges -->
+        <div id="returns" class="mb-16">
+            <h2 class="text-3xl font-bold text-dark mb-8 text-center">Returns & Exchanges</h2>
+            
+            <div class="space-y-6">
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">What is your return policy?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>We offer a 7-day return policy from the date of delivery. Items must be:</p>
+                        <ul class="list-disc list-inside mt-2 space-y-1">
+                            <li>In original condition and packaging</li>
+                            <li>Unused and undamaged</li>
+                            <li>With all original tags and accessories</li>
+                        </ul>
+                        <p class="mt-2">Contact us within 7 days to initiate a return. Return shipping costs may apply unless the item was damaged or incorrect.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">How do I return an item?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>To return an item:</p>
+                        <ol class="list-decimal list-inside mt-2 space-y-1">
+                            <li>Contact us via WhatsApp at +254 790 420 843</li>
+                            <li>Provide your order details and reason for return</li>
+                            <li>We'll provide return instructions and address</li>
+                            <li>Package the item securely with original packaging</li>
+                            <li>Send the item back using our recommended courier</li>
+                        </ol>
+                        <p class="mt-2">Refunds are processed within 3-7 business days after we receive the returned item.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">What if my item arrives damaged?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>If your item arrives damaged, contact us immediately via WhatsApp with photos of the damage. We'll arrange for a replacement or full refund at no cost to you. We may also file a claim with the courier service.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products & Quality -->
+        <div id="products" class="mb-16">
+            <h2 class="text-3xl font-bold text-dark mb-8 text-center">Products & Quality</h2>
+            
+            <div class="space-y-6">
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">Are your products authentic?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Yes, all our products are 100% authentic. We source directly from manufacturers and authorized distributors. Every product comes with a quality guarantee and authenticity certificate where applicable.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">Do you offer warranties?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>Many of our products come with manufacturer warranties. Warranty terms vary by product and are clearly stated on product pages. We also offer our own quality guarantee - if a product fails due to manufacturing defects within 30 days, we'll replace it free of charge.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                    <button class="faq-toggle w-full text-left flex justify-between items-center" onclick="toggleFAQ(this)">
+                        <h3 class="text-lg font-semibold text-dark">Can I see products before buying?</h3>
+                        <svg class="w-6 h-6 text-primary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer hidden mt-4 text-gray-600">
+                        <p>We provide detailed product photos and descriptions on our website. For customers in Nairobi, we can arrange product viewing appointments at our office. We also offer video calls to show products in detail before purchase.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Still Have Questions -->
+<section class="py-16 bg-gray-800 -mb-16 text-white ">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">Still Have Questions?</h2>
+        <p class="text-xl text-orange-100 mb-8">
+            Can't find what you're looking for? Our friendly customer service team is here to help!
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="https://wa.me/254790420843" class="border border-white text-primary px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors">
+                Chat on WhatsApp
+            </a>
+            <a href="mailto:jossiefancies1@gmail.com" class="border border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-primary transition-colors">
+                Send Email
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleFAQ(button) {
+        const answer = button.nextElementSibling;
+        const icon = button.querySelector('svg');
+        
+        if (answer.classList.contains('hidden')) {
+            answer.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            answer.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
+    
+    function scrollToSection(sectionId) {
+        document.getElementById(sectionId).scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+    
+    // Auto-expand FAQ from URL hash
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.location.hash) {
+            const targetSection = document.querySelector(window.location.hash);
+            if (targetSection) {
+                setTimeout(() => {
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    });
+</script>
+{% endblock %}

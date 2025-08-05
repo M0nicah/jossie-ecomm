@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Order Alert - {{ business_name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #f97316; color: white; padding: 20px; text-align: center; }
+        .alert { background: #fee2e2; border: 1px solid #fecaca; color: #dc2626; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .order-details { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .item { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .total { font-weight: bold; color: #f97316; font-size: 18px; }
+        .action-btn { display: inline-block; background: #059669; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 5px; }
+        .urgent { background: #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 New Order Alert</h1>
+            <h2>{{ business_name }} Admin</h2>
+        </div>
+        
+        <div class="alert">
+            <strong>⚡ Action Required:</strong> A new order has been placed and requires your attention!
+        </div>
+        
+        <div class="content">
+            <div class="order-details">
+                <h3>Order Summary</h3>
+                <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+                <p><strong>Customer:</strong> {{ order.first_name }} {{ order.last_name }}</p>
+                <p><strong>Email:</strong> {{ order.email }}</p>
+                <p><strong>Phone:</strong> {{ order.phone }}</p>
+                <p><strong>Order Date:</strong> {{ order.created_at|date:"F d, Y H:i" }}</p>
+                <p><strong>Total Amount:</strong> <span class="total">${{ order.total_amount }}</span></p>
+                <p><strong>Total Items:</strong> {{ order.total_items }}</p>
+            </div>
+            
+            <div class="order-details">
+                <h3>Customer Details</h3>
+                <p>
+                    <strong>Delivery Address:</strong><br>
+                    {{ order.address }}<br>
+                    {{ order.city }}, {{ order.postal_code }}
+                </p>
+                
+                {% if order.notes %}
+                <p><strong>Special Instructions:</strong><br>{{ order.notes }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="order-details">
+                <h3>Items Ordered</h3>
+                {% for item in order.items.all %}
+                <div class="item">
+                    <strong>{{ item.product_name }}</strong><br>
+                    SKU: {{ item.product.sku }}<br>
+                    Quantity: {{ item.quantity }} × ${{ item.product_price }} = ${{ item.total_price }}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <h3>Quick Actions</h3>
+                <a href="{{ admin_dashboard_url }}" class="action-btn">
+                    📊 View in Dashboard
+                </a>
+                <a href="{{ whatsapp_url }}" class="action-btn">
+                    💬 Contact Customer
+                </a>
+                <a href="{{ admin_order_url }}" class="action-btn urgent">
+                    ✅ Manage Order
+                </a>
+            </div>
+            
+            <div class="alert">
+                <strong>⏰ Remember:</strong> Contact the customer via WhatsApp to confirm the order and arrange payment!
+            </div>
+        </div>
+        
+        <div style="text-align: center; padding: 20px; color: #666;">
+            <p>This is an automated notification from {{ business_name }}</p>
+            <p>Order placed at {{ order.created_at|date:"F d, Y H:i:s" }}</p>
+        </div>
+    </div>
+</body>
+</html>

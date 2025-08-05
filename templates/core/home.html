@@ -1,0 +1,620 @@
+{% extends 'base.html' %}
+
+{% block title %}Jossie Fancies - Premium Home Goods{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Carousel -->
+<section class="relative h-96 md:h-[600px] overflow-hidden">
+    <div id="heroCarousel" class="relative h-full">
+        <!-- Slide 1 -->
+        <div class="carousel-slide absolute inset-0 transition-transform duration-500 ease-in-out">
+            <div class="relative h-full flex items-center" style="background: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80') center/cover;">
+                <div class="absolute inset-0 bg-black/50"></div>
+                <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-2xl modern-card p-8 rounded-2xl border border-orange/30 bg-white/10 backdrop-blur-sm">
+                        <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 fade-in">
+                            Premium Home Goods
+                        </h1>
+                        <p class="text-xl md:text-2xl text-white/90 mb-8 fade-in">
+                            Transform your home with our curated collection of quality products
+                        </p>
+                        <a href="{% url 'products' %}" class="inline-block bg-gradient-to-r from-orange to-primary-dark text-white px-8 py-4 rounded-xl text-lg font-bold hover-glow transition-all transform hover:scale-105 fade-in">
+                            Shop Now 
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 2 -->
+        <div class="carousel-slide absolute inset-0 translate-x-full transition-transform duration-500 ease-in-out">
+            <div class="relative h-full flex items-center" style="background: url('https://images.unsplash.com/photo-1565538810643-b5bdb714032a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80') center/cover;">
+                <div class="absolute inset-0 bg-black/50"></div>
+                <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-2xl modern-card p-8 rounded-2xl border border-orange/30 bg-white/10 backdrop-blur-sm">
+                        <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 glow-orange">
+                            Kitchen Essentials
+                        </h1>
+                        <p class="text-xl md:text-2xl text-white/90 mb-8">
+                            Professional-grade tools for the modern chef
+                        </p>
+                        <a href="#" id="kitchenCarouselLink" class="inline-block bg-gradient-to-r from-success to-green-600 text-white px-8 py-4 rounded-xl text-lg font-bold hover-glow transition-all transform hover:scale-105">
+                            Explore Kitchen 
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="carousel-slide absolute inset-0 translate-x-full transition-transform duration-500 ease-in-out">
+            <div class="relative h-full flex items-center" style="background: url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80') center/cover;">
+                <div class="absolute inset-0 bg-black/50"></div>
+                <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-2xl modern-card p-8 rounded-2xl border border-orange/30 bg-white/10 backdrop-blur-sm">
+                        <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 glow-orange">
+                            Luxury Bedding
+                        </h1>
+                        <p class="text-xl md:text-2xl text-white/90 mb-8">
+                            Experience the comfort of premium Egyptian cotton
+                        </p>
+                        <a href="#" id="beddingCarouselLink" class="inline-block bg-gradient-to-r from-purple-600 to-purple-800 text-white px-8 py-4 rounded-xl text-lg font-bold hover-glow transition-all transform hover:scale-105">
+                            Shop Bedding 
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Carousel Navigation -->
+    <button onclick="previousSlide()" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/10 backdrop-blur-sm hover:bg-orange/20 text-white p-3 rounded-full transition-all">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+    </button>
+    <button onclick="nextSlide()" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/10 backdrop-blur-sm hover:bg-orange/20 text-white p-3 rounded-full transition-all">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+    </button>
+    
+    <!-- Carousel Indicators -->
+    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3">
+        <button onclick="goToSlide(0)" class="slide-indicator w-4 h-4 rounded-full bg-orange/50 hover:bg-orange/70 transition-all active border border-orange/30"></button>
+        <button onclick="goToSlide(1)" class="slide-indicator w-4 h-4 rounded-full bg-orange/50 hover:bg-orange/70 transition-all border border-orange/30"></button>
+        <button onclick="goToSlide(2)" class="slide-indicator w-4 h-4 rounded-full bg-orange/50 hover:bg-orange/70 transition-all border border-orange/30"></button>
+    </div>
+</section>
+
+<!-- Featured Categories -->
+<section class="py-16 bg-white relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-20">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#FF9A00" stroke-width="1"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+        </svg>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Shop by Category</h2>
+            <p class="text-xl text-gray-600">Discover our curated collections for every room</p>
+        </div>
+        
+        <div id="homeCategoriesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <!-- Categories will be loaded dynamically -->
+            <div class="flex justify-center items-center col-span-full">
+                <div class="loading-spinner"></div>
+                <span class="ml-3 text-gray-600">Loading categories...</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-16 bg-gray-50 relative overflow-hidden">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0">
+        <div class="absolute top-10 left-10 w-32 h-32 bg-orange/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-20 right-20 w-48 h-48 bg-orange/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s"></div>
+        <div class="absolute top-1/2 left-1/3 w-24 h-24 bg-orange/8 rounded-full blur-2xl animate-pulse" style="animation-delay: 4s"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Featured Products</h2>
+            <p class="text-xl text-gray-600">Hand-picked items from our premium collection</p>
+        </div>
+        
+        <div id="featuredProducts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Products will be loaded here via JavaScript -->
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="{% url 'products' %}" class="inline-block bg-gradient-to-r from-orange to-primary-dark text-white px-8 py-4 rounded-xl text-lg font-bold hover-glow transition-all transform hover:scale-105">
+                View All Products →
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-16 bg-white relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center bg-white p-8 rounded-2xl border border-gray-200 hover:border-orange/20 shadow-sm hover:shadow-lg transition-all">
+                <div class="w-16 h-16 mx-auto mb-4 bg-orange/20 rounded-full flex items-center justify-center">
+                    <svg class="h-8 w-8 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Quality Guarantee</h3>
+                <p class="text-gray-600">Premium materials and craftsmanship in every product</p>
+            </div>
+            
+            <div class="text-center bg-white p-8 rounded-2xl border border-gray-200 hover:border-orange/20 shadow-sm hover:shadow-lg transition-all">
+                <div class="w-16 h-16 mx-auto mb-4 bg-success/20 rounded-full flex items-center justify-center">
+                    <svg class="h-8 w-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Fast Delivery</h3>
+                <p class="text-gray-600">Quick and reliable shipping to your doorstep</p>
+            </div>
+            
+            <div class="text-center bg-white p-8 rounded-2xl border border-gray-200 hover:border-orange/20 shadow-sm hover:shadow-lg transition-all">
+                <div class="w-16 h-16 mx-auto mb-4 bg-blue-500/20 rounded-full flex items-center justify-center">
+                    <svg class="h-8 w-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">24/7 Support</h3>
+                <p class="text-gray-600">Customer service available around the clock</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick View Modal -->
+<div id="quickViewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div id="quickViewContent" class="p-6">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentSlide = 0;
+    const totalSlides = 3;
+    let slideInterval;
+
+    // Load featured products
+    document.addEventListener('DOMContentLoaded', function() {
+        loadHomeCategories();
+        loadFeaturedProducts();
+        startCarousel();
+    });
+
+    async function loadHomeCategories() {
+        try {
+            const response = await apiCall('/api/categories/');
+            // Categories API returns direct array, not paginated
+            const categories = Array.isArray(response) ? response : (response.results || []);
+            renderHomeCategories(categories);
+        } catch (error) {
+            console.error('Error loading categories:', error);
+            // Show error message and fallback
+            const grid = document.getElementById('homeCategoriesGrid');
+            grid.innerHTML = '<div class="col-span-full text-center text-gray-500">Unable to load categories. Please refresh the page.</div>';
+        }
+    }
+
+    function renderHomeCategories(categories) {
+        const grid = document.getElementById('homeCategoriesGrid');
+        
+        // Define category themes with Material Symbols icons and colors
+        const categoryThemes = {
+            'kitchen': {
+                colorClass: 'bg-orange/20 group-hover:bg-orange/30',
+                iconColor: 'text-orange',
+                hoverColor: 'group-hover:text-orange',
+                icon: `<iconify-icon icon="material-symbols:restaurant" class="h-8 w-8 text-orange" style="font-size: 32px;"></iconify-icon>`
+            },
+            'dining': {
+                colorClass: 'bg-green-500/20 group-hover:bg-green-500/30',
+                iconColor: 'text-green-500',
+                hoverColor: 'group-hover:text-green-500',
+                icon: `<iconify-icon icon="material-symbols:table-restaurant" class="h-8 w-8 text-green-500" style="font-size: 32px;"></iconify-icon>`
+            },
+            'bedding': {
+                colorClass: 'bg-purple-500/20 group-hover:bg-purple-500/30',
+                iconColor: 'text-purple-500',
+                hoverColor: 'group-hover:text-purple-500',
+                icon: `<iconify-icon icon="material-symbols:bed" class="h-8 w-8 text-purple-500" style="font-size: 32px;"></iconify-icon>`
+            },
+            'storage': {
+                colorClass: 'bg-blue-500/20 group-hover:bg-blue-500/30',
+                iconColor: 'text-blue-500',
+                hoverColor: 'group-hover:text-blue-500',
+                icon: `<iconify-icon icon="material-symbols:inventory-2" class="h-8 w-8 text-blue-500" style="font-size: 32px;"></iconify-icon>`
+            },
+            'bathroom': {
+                colorClass: 'bg-teal-500/20 group-hover:bg-teal-500/30',
+                iconColor: 'text-teal-500',
+                hoverColor: 'group-hover:text-teal-500',
+                icon: `<iconify-icon icon="material-symbols:shower" class="h-8 w-8 text-teal-500" style="font-size: 32px;"></iconify-icon>`
+            }
+        };
+        
+        // Default theme for categories not in the list
+        const defaultTheme = {
+            colorClass: 'bg-orange/20 group-hover:bg-orange/30',
+            iconColor: 'text-orange',
+            hoverColor: 'group-hover:text-orange',
+            icon: `<iconify-icon icon="material-symbols:home" class="h-8 w-8 text-orange" style="font-size: 32px;"></iconify-icon>`
+        };
+        
+        grid.innerHTML = categories.map(category => {
+            const theme = categoryThemes[category.slug] || defaultTheme;
+            return `
+                <a href="/category/${category.slug}/" class="group block">
+                    <div class="bg-white rounded-xl p-6 text-center hover:bg-orange/5 transition-all duration-300 transform hover:scale-105 border border-gray-200 hover:border-orange/20 shadow-sm hover:shadow-lg">
+                        <div class="w-16 h-16 mx-auto mb-4 ${theme.colorClass} rounded-full flex items-center justify-center transition-all">
+                            ${theme.icon}
+                        </div>
+                        <h3 class="font-semibold text-gray-800 group-hover:text-orange transition-colors">${category.name}</h3>
+                    </div>
+                </a>
+            `;
+        }).join('');
+        
+        // Update carousel category links
+        updateCarouselLinks(categories);
+    }
+
+    function updateCarouselLinks(categories) {
+        // Find categories by name to update carousel links
+        const kitchenCategory = categories.find(cat => cat.name.toLowerCase().includes('kitchen'));
+        const beddingCategory = categories.find(cat => cat.name.toLowerCase().includes('bedding'));
+        
+        // Update kitchen carousel link
+        const kitchenLink = document.getElementById('kitchenCarouselLink');
+        if (kitchenLink && kitchenCategory) {
+            kitchenLink.href = `/category/${kitchenCategory.slug}/`;
+        }
+        
+        // Update bedding carousel link
+        const beddingLink = document.getElementById('beddingCarouselLink');
+        if (beddingLink && beddingCategory) {
+            beddingLink.href = `/category/${beddingCategory.slug}/`;
+        }
+    }
+
+    async function loadFeaturedProducts() {
+        try {
+            const response = await apiCall('/api/products/?featured=true');
+            // This returns paginated data, so use the normalized response
+            const normalized = normalizeApiResponse(response);
+            renderFeaturedProducts(normalized.data);
+        } catch (error) {
+            console.error('Error loading featured products:', error);
+        }
+    }
+
+    function renderFeaturedProducts(products) {
+        const container = document.getElementById('featuredProducts');
+        container.innerHTML = products.map(product => `
+            <div class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-orange/20">
+                <div class="relative overflow-hidden bg-gray-50">
+                    <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                         alt="${product.name}" 
+                         class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500 cursor-pointer"
+                         onclick="openQuickView(${product.id})">
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <div class="absolute top-2 left-2 flex flex-col space-y-1">
+                        ${product.is_featured ? `<span class="bg-orange text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">Featured</span>` : ''}
+                    </div>
+                    
+                    <div class="absolute top-2 right-2">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm ${getStockStatusClass(product.stock_status)}">
+                            <span class="w-1.5 h-1.5 rounded-full mr-1.5 ${product.stock_status === 'in_stock' ? 'bg-emerald-500' : product.stock_status === 'low_stock' ? 'bg-amber-500' : product.stock_status === 'out_of_stock' ? 'bg-red-500' : 'bg-slate-500'}"></span>
+                            ${product.stock_status.replace('_', ' ').toUpperCase()}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="p-4 h-42 flex flex-col justify-between">
+                    <div>
+                        <div class="mb-1">
+                            <span class="text-xs text-orange font-semibold uppercase tracking-wider">${product.category?.name || 'Product'}</span>
+                        </div>
+                        
+                        <h3 class="font-bold text-gray-800 mb-1 text-sm leading-tight group-hover:text-orange transition-colors cursor-pointer" onclick="openQuickView(${product.id})">${product.name}</h3>
+                        
+                        <p class="text-gray-600 text-xs mb-2 line-clamp-2 leading-relaxed">${product.short_description}</p>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="text-sm font-bold text-orange">KSH ${parseFloat(product.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        
+                        <div class="flex items-center justify-between">
+                            <button onclick="addToCart(${product.id})" 
+                                    class="w-full bg-gradient-to-r from-orange to-primary-dark text-white px-3 py-2 rounded-lg hover-glow transition-all duration-300 font-semibold text-xs transform hover:scale-105 ${product.stock_status === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}>
+                                ${product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
+                            </button>
+
+                            <button onclick="openQuickView(${product.id})" 
+                                    class="text-gray-500 hover:text-orange transition-colors p-1 rounded-lg hover:bg-gray-50"
+                                    title="Quick View">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function getStockStatusClass(status) {
+        switch (status) {
+            case 'in_stock':
+                return 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 shadow-sm';
+            case 'low_stock':
+                return 'bg-amber-500/20 text-amber-700 border border-amber-500/30 shadow-sm';
+            case 'out_of_stock':
+                return 'bg-red-500/20 text-red-700 border border-red-500/30 shadow-sm';
+            default:
+                return 'bg-slate-500/20 text-slate-700 border border-slate-500/30 shadow-sm';
+        }
+    }
+
+    // Carousel functions
+    function startCarousel() {
+        slideInterval = setInterval(nextSlide, 5000);
+    }
+
+    function stopCarousel() {
+        clearInterval(slideInterval);
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateCarousel();
+    }
+
+    function previousSlide() {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateCarousel();
+    }
+
+    function goToSlide(slideIndex) {
+        currentSlide = slideIndex;
+        updateCarousel();
+        stopCarousel();
+        setTimeout(startCarousel, 10000); // Restart after 10 seconds
+    }
+
+    function updateCarousel() {
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.slide-indicator');
+
+        slides.forEach((slide, index) => {
+            if (index === currentSlide) {
+                slide.style.transform = 'translateX(0)';
+            } else if (index < currentSlide) {
+                slide.style.transform = 'translateX(-100%)';
+            } else {
+                slide.style.transform = 'translateX(100%)';
+            }
+        });
+
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentSlide);
+            if (index === currentSlide) {
+                indicator.style.backgroundColor = 'rgba(255, 154, 0, 0.9)';
+            } else {
+                indicator.style.backgroundColor = 'rgba(255, 154, 0, 0.5)';
+            }
+        });
+    }
+
+    // Pause carousel on hover
+    document.getElementById('heroCarousel').addEventListener('mouseenter', stopCarousel);
+    document.getElementById('heroCarousel').addEventListener('mouseleave', startCarousel);
+
+    // Quick view functionality
+    async function openQuickView(productId) {
+        if (!productId) {
+            showToast('Invalid product ID', 'error');
+            return;
+        }
+
+        const modal = document.getElementById('quickViewModal');
+        const content = document.getElementById('quickViewContent');
+        
+        if (!modal || !content) {
+            console.error('Quick view modal elements not found');
+            return;
+        }
+
+        try {
+            showLoading(true);
+            
+            // Show loading state in modal
+            content.innerHTML = `
+                <div class="flex justify-center items-center h-64">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-orange"></div>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            const product = await apiCall(`/api/products/${productId}/`);
+            
+            if (!product) {
+                throw new Error('Product not found');
+            }
+
+            // Helper function to safely format price
+            const formatPrice = (price) => {
+                const numPrice = parseFloat(price) || 0;
+                return numPrice.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            };
+
+            // Helper function to escape HTML
+            const escapeHtml = (text) => {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            };
+
+            // Get primary image with fallback
+            const primaryImageSrc = product.primary_image?.image || 
+                                  (product.images && product.images[0]?.image) || 
+                                  '/static/images/placeholder.svg';
+
+            content.innerHTML = `
+                <div class="flex justify-between items-start mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">${escapeHtml(product.name || 'Product')}</h2>
+                    <button onclick="closeQuickView()" class="text-gray-600 hover:text-orange p-2 rounded-lg transition-all" aria-label="Close quick view">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="mb-4">
+                            <img id="quickview-main-image" 
+                                 src="${primaryImageSrc}" 
+                                 alt="${escapeHtml(product.name || 'Product image')}" 
+                                 class="w-full h-80 object-cover rounded-lg"
+                                 onerror="this.src='/static/images/placeholder.svg'">
+                        </div>
+                        ${product.images && product.images.length > 1 ? `
+                            <div class="grid grid-cols-4 gap-2">
+                                ${product.images.map((image, index) => `
+                                    <img src="${image.image}" 
+                                         alt="${escapeHtml(image.alt_text || `${product.name} image ${index + 1}`)}" 
+                                         class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity border-2 ${image.image === primaryImageSrc ? 'border-orange' : 'border-transparent'}"
+                                         onclick="changeMainImage('${image.image}', this)"
+                                         onerror="this.style.display='none'">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div>
+                        <div class="mb-4">
+                            <span class="text-sm text-orange uppercase tracking-wide">${escapeHtml(product.category?.name || 'Uncategorized')}</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <span class="text-3xl font-bold text-orange">KES ${formatPrice(product.price)}</span>
+                                ${product.original_price ? `<span class="text-xl text-gray-400 line-through">KES ${formatPrice(product.original_price)}</span>` : ''}
+                                ${product.has_discount && product.discount_percentage ? `<span class="bg-red-500/90 backdrop-blur-sm text-white px-2 py-1 rounded text-sm font-semibold">-${product.discount_percentage}% OFF</span>` : ''}
+                            </div>
+                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${getStockStatusClass(product.stock_status)}">
+                                <span class="w-2 h-2 rounded-full mr-2 ${product.stock_status === 'in_stock' ? 'bg-emerald-500' : product.stock_status === 'low_stock' ? 'bg-amber-500' : product.stock_status === 'out_of_stock' ? 'bg-red-500' : 'bg-slate-500'}"></span>
+                                ${(product.stock_status || 'unknown').replace('_', ' ').toUpperCase()}
+                            </span>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-600 leading-relaxed">${escapeHtml(product.description || 'No description available')}</p>
+                        </div>
+                        
+                        ${product.weight || product.dimensions ? `
+                            <div class="mb-6 modern-card p-4 rounded-lg border border-gray-200">
+                                <h4 class="font-semibold mb-2 text-gray-800">Product Details</h4>
+                                ${product.weight ? `<p class="text-sm text-gray-600 mb-1">Weight: ${product.weight} kg</p>` : ''}
+                                ${product.dimensions ? `<p class="text-sm text-gray-600">Dimensions: ${escapeHtml(product.dimensions)}</p>` : ''}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex space-x-4 mb-4">
+                            <button onclick="addToCart(${product.id}); closeQuickView();" 
+                                    class="flex-1 bg-gradient-to-r from-orange to-primary-dark text-white py-3 px-6 rounded-xl hover-glow transition-all font-bold ${product.stock_status === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}
+                                    aria-label="Add ${escapeHtml(product.name)} to cart">
+                                ${product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
+                            </button>
+                        </div>
+                        
+                        <div class="text-sm text-gray-500">
+                            <p>SKU: ${escapeHtml(product.sku || 'N/A')}</p>
+                            <p>Stock: ${product.stock_quantity || 0} available</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        } catch (error) {
+            console.error('Error loading product details:', error);
+            content.innerHTML = `
+                <div class="flex justify-between items-start mb-6">
+                    <h2 class="text-xl font-bold text-red-600">Error Loading Product</h2>
+                    <button onclick="closeQuickView()" class="text-gray-600 hover:text-orange p-2 rounded-lg transition-all">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="text-center py-8">
+                    <p class="text-gray-600">Unable to load product details. Please try again.</p>
+                    <button onclick="openQuickView(${productId})" class="mt-4 bg-orange text-white px-4 py-2 rounded hover:bg-orange-600 transition-colors">
+                        Retry
+                    </button>
+                </div>
+            `;
+            showToast('Error loading product details', 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function closeQuickView() {
+        const modal = document.getElementById('quickViewModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    function changeMainImage(imageUrl, clickedThumbnail) {
+        const mainImage = document.getElementById('quickview-main-image');
+        if (mainImage && imageUrl) {
+            mainImage.src = imageUrl;
+            
+            // Update thumbnail borders to show active state
+            if (clickedThumbnail) {
+                const thumbnails = document.querySelectorAll('#quickViewContent .grid img');
+                thumbnails.forEach(thumb => {
+                    thumb.classList.remove('border-orange');
+                    thumb.classList.add('border-transparent');
+                });
+                clickedThumbnail.classList.remove('border-transparent');
+                clickedThumbnail.classList.add('border-orange');
+            }
+        }
+    }
+</script>
+{% endblock %}

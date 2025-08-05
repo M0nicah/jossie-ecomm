@@ -1,0 +1,27 @@
+{
+  "name": "jossie-fancies",
+  "version": "1.0.0",
+  "description": "Django e-commerce site for Jossie Fancies",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch",
+    "build": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify",
+    "build-css": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch",
+    "build-css-prod": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify",
+    "start": "python manage.py runserver",
+    "update-browserslist": "npx update-browserslist-db"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "@tailwindcss/aspect-ratio": "^0.4.2"
+  },
+  "keywords": [
+    "django",
+    "tailwindcss",
+    "ecommerce"
+  ],
+  "author": "Jossie Fancies",
+  "license": "ISC"
+}

@@ -1,0 +1,470 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Jossie Fancies{% endblock %}
+
+{% block content %}
+<!-- Product Detail -->
+<section class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Loading State -->
+        <div id="productLoading" class="text-center py-12">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p class="text-gray-600">Loading product details...</p>
+        </div>
+        
+        <!-- Product Not Found -->
+        <div id="productNotFound" class="text-center py-12 hidden">
+            <svg class="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.004-5.678-2.678m0 0L9 9m-3 6.022A7.96 7.96 0 013 12c0-2.485 1.135-4.73 2.906-6.265M15 9.022A7.96 7.96 0 0121 12c0 2.485-1.135 4.73-2.906 6.265"></path>
+            </svg>
+            <h2 class="text-2xl font-bold text-gray-700 mb-2">Product Not Found</h2>
+            <p class="text-gray-600 mb-4">The product you're looking for doesn't exist or has been removed.</p>
+            <a href="{% url 'products' %}" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors">
+                Browse All Products
+            </a>
+        </div>
+        
+        <!-- Product Content -->
+        <div id="productContent" class="hidden">
+            <!-- Breadcrumb -->
+            <nav class="mb-8">
+                <ol class="flex items-center space-x-2 text-sm text-gray-500">
+                    <li><a href="{% url 'home' %}" class="hover:text-primary transition-colors">Home</a></li>
+                    <li><span class="mx-2">/</span></li>
+                    <li><a href="{% url 'products' %}" class="hover:text-primary transition-colors">Products</a></li>
+                    <li><span class="mx-2">/</span></li>
+                    <li id="categoryBreadcrumb"><a href="#" class="hover:text-primary transition-colors"></a></li>
+                    <li><span class="mx-2">/</span></li>
+                    <li id="productBreadcrumb" class="text-gray-900 font-medium"></li>
+                </ol>
+            </nav>
+            
+            <!-- Product Details -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Product Images -->
+                <div class="space-y-4">
+                    <div class="aspect-square bg-gray-100 rounded-2xl overflow-hidden">
+                        <img id="mainProductImage" src="" alt="" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <!-- Thumbnail Images -->
+                    <div id="thumbnailImages" class="grid grid-cols-4 gap-2">
+                        <!-- Thumbnails will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Product Information -->
+                <div class="space-y-6">
+                    <!-- Product Title & Category -->
+                    <div>
+                        <div class="mb-2">
+                            <span id="productCategory" class="text-sm text-primary font-semibold uppercase tracking-wider"></span>
+                        </div>
+                        <h1 id="productName" class="text-3xl md:text-4xl font-bold text-dark mb-4"></h1>
+                        <p id="productShortDescription" class="text-xl text-gray-600"></p>
+                    </div>
+                    
+                    <!-- Price & Stock -->
+                    <div class="border-b pb-6">
+                        <div class="flex items-baseline space-x-4 mb-4">
+                            <span id="productPrice" class="text-4xl font-bold text-primary"></span>
+                            <span id="productOriginalPrice" class="text-2xl text-gray-500 line-through hidden"></span>
+                            <span id="productDiscount" class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold hidden"></span>
+                        </div>
+                        
+                        <div id="productStock" class="flex items-center space-x-4">
+                            <span class="inline-block px-4 py-2 rounded-lg text-sm font-semibold"></span>
+                            <span id="stockQuantity" class="text-gray-600"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Description -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-dark mb-3">Description</h3>
+                        <div id="productDescription" class="text-gray-700 leading-relaxed prose max-w-none"></div>
+                    </div>
+                    
+                    <!-- Product Details -->
+                    <div id="productDetailsSection" class="bg-gray-50 rounded-xl p-6 hidden">
+                        <h3 class="text-lg font-semibold text-dark mb-4">Product Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div id="productSKU" class="hidden">
+                                <span class="font-medium text-gray-900">SKU:</span>
+                                <span class="text-gray-600"></span>
+                            </div>
+                            <div id="productWeight" class="hidden">
+                                <span class="font-medium text-gray-900">Weight:</span>
+                                <span class="text-gray-600"></span>
+                            </div>
+                            <div id="productDimensions" class="hidden">
+                                <span class="font-medium text-gray-900">Dimensions:</span>
+                                <span class="text-gray-600"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Add to Cart Section -->
+                    <div class="border-t pt-6">
+                        <div class="flex items-center space-x-4 mb-6">
+                            <label for="quantity" class="text-sm font-medium text-gray-900">Quantity:</label>
+                            <div class="flex items-center border border-gray-300 rounded-lg">
+                                <button type="button" onclick="decreaseQuantity()" class="px-3 py-2 hover:bg-gray-100 transition-colors">-</button>
+                                <input type="number" id="quantity" name="quantity" min="1" value="1" class="w-16 text-center border-0 focus:ring-0">
+                                <button type="button" onclick="increaseQuantity()" class="px-3 py-2 hover:bg-gray-100 transition-colors">+</button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-4">
+                            <button id="addToCartBtn" onclick="addProductToCart()" class="flex-1 bg-primary text-white py-4 px-6 rounded-xl hover:bg-orange-600 transition-colors font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Add to Cart
+                            </button>
+                            <button onclick="toggleCart()" class="px-6 py-4 border-2 border-primary text-primary rounded-xl hover:bg-primary hover:text-white transition-colors font-semibold">
+                                View Cart
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Information -->
+                    <div class="bg-blue-50 rounded-xl p-6">
+                        <h4 class="font-semibold text-dark mb-3">Why choose Jossie Fancies?</h4>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li class="flex items-center">
+                                <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Quality guaranteed products
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                Fast delivery across Kenya
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                7-day return policy
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products -->
+<section id="relatedProductsSection" class="py-16 bg-gray-50 hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-dark mb-4">Related Products</h2>
+            <p class="text-xl text-gray-600">You might also like these products</p>
+        </div>
+        
+        <div id="relatedProducts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Related products will be loaded here -->
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentProduct = null;
+    let currentQuantity = 1;
+    const productSlug = '{{ slug }}';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        loadProduct();
+    });
+
+    async function loadProduct() {
+        try {
+            showLoading(true);
+            
+            // First try to get product by slug, if that fails, treat slug as ID
+            let product;
+            try {
+                const response = await apiCall(`/api/products/?search=${encodeURIComponent(productSlug)}`);
+                const normalized = normalizeApiResponse(response);
+                if (normalized.data.length > 0) {
+                    product = normalized.data[0];
+                } else {
+                    throw new Error('Product not found');
+                }
+            } catch (error) {
+                // If search fails, try treating slug as ID
+                try {
+                    product = await apiCall(`/api/products/${productSlug}/`);
+                } catch (idError) {
+                    throw new Error('Product not found');
+                }
+            }
+            
+            currentProduct = product;
+            renderProduct(product);
+            loadRelatedProducts(product.category?.id);
+            
+        } catch (error) {
+            console.error('Error loading product:', error);
+            showProductNotFound();
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function renderProduct(product) {
+        // Update page title
+        document.title = `${product.name} - Jossie Fancies`;
+        
+        // Update breadcrumb
+        const categoryBreadcrumb = document.getElementById('categoryBreadcrumb').querySelector('a');
+        const productBreadcrumb = document.getElementById('productBreadcrumb');
+        
+        if (product.category) {
+            categoryBreadcrumb.href = `/category/${product.category.slug}/`;
+            categoryBreadcrumb.textContent = product.category.name;
+        } else {
+            categoryBreadcrumb.href = '#';
+            categoryBreadcrumb.textContent = 'Uncategorized';
+        }
+        productBreadcrumb.textContent = product.name;
+        
+        // Update main image
+        const mainImage = document.getElementById('mainProductImage');
+        mainImage.src = product.primary_image?.image || '/static/images/placeholder.svg';
+        mainImage.alt = product.name;
+        
+        // Update thumbnail images
+        const thumbnailContainer = document.getElementById('thumbnailImages');
+        if (product.images && product.images.length > 0) {
+            thumbnailContainer.innerHTML = product.images.map((image, index) => `
+                <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer hover:opacity-75 transition-opacity ${index === 0 ? 'ring-2 ring-primary' : ''}" onclick="changeMainImage('${image.image}', this)">
+                    <img src="${image.image}" alt="${image.alt_text || product.name}" class="w-full h-full object-cover">
+                </div>
+            `).join('');
+        } else {
+            thumbnailContainer.innerHTML = `
+                <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden ring-2 ring-primary">
+                    <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" alt="${product.name}" class="w-full h-full object-cover">
+                </div>
+            `;
+        }
+        
+        // Update product information
+        document.getElementById('productCategory').textContent = product.category?.name || 'Product';
+        document.getElementById('productName').textContent = product.name;
+        document.getElementById('productShortDescription').textContent = product.short_description || '';
+        
+        // Update pricing
+        document.getElementById('productPrice').textContent = `KES ${parseInt(product.price).toLocaleString()}`;
+        
+        const originalPriceElement = document.getElementById('productOriginalPrice');
+        const discountElement = document.getElementById('productDiscount');
+        
+        if (product.original_price && product.has_discount) {
+            originalPriceElement.textContent = `KES ${parseInt(product.original_price).toLocaleString()}`;
+            originalPriceElement.classList.remove('hidden');
+            discountElement.textContent = `-${product.discount_percentage}% OFF`;
+            discountElement.classList.remove('hidden');
+        }
+        
+        // Update stock information
+        const stockElement = document.getElementById('productStock');
+        const stockSpan = stockElement.querySelector('span');
+        const stockQuantityElement = document.getElementById('stockQuantity');
+        
+        stockSpan.className = `inline-block px-4 py-2 rounded-lg text-sm font-semibold ${getStockStatusClass(product.stock_status)}`;
+        stockSpan.textContent = product.stock_status.replace('_', ' ').toUpperCase();
+        stockQuantityElement.textContent = `${product.stock_quantity} available`;
+        
+        // Update description
+        document.getElementById('productDescription').innerHTML = product.description;
+        
+        // Update product details
+        const detailsSection = document.getElementById('productDetailsSection');
+        let hasDetails = false;
+        
+        if (product.sku) {
+            const skuElement = document.getElementById('productSKU');
+            skuElement.querySelector('span:last-child').textContent = product.sku;
+            skuElement.classList.remove('hidden');
+            hasDetails = true;
+        }
+        
+        if (product.weight) {
+            const weightElement = document.getElementById('productWeight');
+            weightElement.querySelector('span:last-child').textContent = `${product.weight} kg`;
+            weightElement.classList.remove('hidden');
+            hasDetails = true;
+        }
+        
+        if (product.dimensions) {
+            const dimensionsElement = document.getElementById('productDimensions');
+            dimensionsElement.querySelector('span:last-child').textContent = product.dimensions;
+            dimensionsElement.classList.remove('hidden');
+            hasDetails = true;
+        }
+        
+        if (hasDetails) {
+            detailsSection.classList.remove('hidden');
+        }
+        
+        // Update add to cart button
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        if (product.stock_status === 'out_of_stock') {
+            addToCartBtn.textContent = 'Out of Stock';
+            addToCartBtn.disabled = true;
+        } else {
+            addToCartBtn.textContent = 'Add to Cart';
+            addToCartBtn.disabled = false;
+        }
+        
+        // Show product content
+        document.getElementById('productContent').classList.remove('hidden');
+    }
+
+    async function loadRelatedProducts(categoryId) {
+        if (!categoryId) return;
+        
+        try {
+            const response = await apiCall(`/api/products/?category=${categoryId}&limit=4`);
+            const normalized = normalizeApiResponse(response);
+            const relatedProducts = normalized.data.filter(p => p.id !== currentProduct.id).slice(0, 4);
+            
+            if (relatedProducts.length > 0) {
+                renderRelatedProducts(relatedProducts);
+                document.getElementById('relatedProductsSection').classList.remove('hidden');
+            }
+        } catch (error) {
+            console.error('Error loading related products:', error);
+        }
+    }
+
+    function renderRelatedProducts(products) {
+        const container = document.getElementById('relatedProducts');
+        container.innerHTML = products.map(product => `
+            <div class="group bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 hover:border-primary/20">
+                <div class="relative overflow-hidden bg-gray-50">
+                    <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                         alt="${product.name}" 
+                         class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                         onclick="window.location.href='/products/${product.slug}/'">
+                    
+                    <div class="absolute top-4 left-4 flex flex-col space-y-2">
+                        ${product.has_discount ? `<span class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">-${product.discount_percentage}% OFF</span>` : ''}
+                        ${product.is_featured ? `<span class="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">Featured</span>` : ''}
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="mb-2">
+                        <span class="text-xs text-primary font-semibold uppercase tracking-wider">${product.category?.name || 'Product'}</span>
+                    </div>
+                    
+                    <h3 class="font-bold text-dark mb-2 text-lg leading-tight group-hover:text-primary transition-colors cursor-pointer" onclick="window.location.href='/products/${product.slug}/'">${product.name}</h3>
+                    
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">${product.short_description}</p>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <div class="flex items-baseline space-x-2">
+                                <span class="text-2xl font-bold text-primary">KES ${parseInt(product.price).toLocaleString()}</span>
+                                ${product.original_price ? `<span class="text-gray-400 line-through text-sm">KES ${parseInt(product.original_price).toLocaleString()}</span>` : ''}
+                            </div>
+                            ${product.has_discount ? `<span class="text-xs text-green-600 font-medium">Save KES ${parseInt(product.original_price - product.price).toLocaleString()}</span>` : ''}
+                        </div>
+                        
+                        <button onclick="addToCart(${product.id})" 
+                                class="bg-primary text-white px-6 py-2.5 rounded-xl hover:bg-orange-600 transition-all duration-300 font-semibold text-sm shadow-lg hover:shadow-xl transform hover:scale-105 ${product.stock_status === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''}"
+                                ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}>
+                            ${product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function changeMainImage(imageSrc, thumbnailElement) {
+        document.getElementById('mainProductImage').src = imageSrc;
+        
+        // Update thumbnail selection
+        document.querySelectorAll('#thumbnailImages > div').forEach(thumb => {
+            thumb.classList.remove('ring-2', 'ring-primary');
+        });
+        thumbnailElement.classList.add('ring-2', 'ring-primary');
+    }
+
+    function increaseQuantity() {
+        const quantityInput = document.getElementById('quantity');
+        const maxQuantity = currentProduct?.stock_quantity || 99;
+        if (currentQuantity < maxQuantity) {
+            currentQuantity++;
+            quantityInput.value = currentQuantity;
+        }
+    }
+
+    function decreaseQuantity() {
+        const quantityInput = document.getElementById('quantity');
+        if (currentQuantity > 1) {
+            currentQuantity--;
+            quantityInput.value = currentQuantity;
+        }
+    }
+
+    async function addProductToCart() {
+        if (!currentProduct) return;
+        
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        
+        try {
+            await addToCart(currentProduct.id, quantity);
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            showToast('Error adding product to cart', 'error');
+        }
+    }
+
+    function showProductNotFound() {
+        document.getElementById('productLoading').classList.add('hidden');
+        document.getElementById('productNotFound').classList.remove('hidden');
+    }
+
+    function showLoading(show) {
+        const loadingElement = document.getElementById('productLoading');
+        const contentElement = document.getElementById('productContent');
+        
+        if (show) {
+            loadingElement.classList.remove('hidden');
+            contentElement.classList.add('hidden');
+        } else {
+            loadingElement.classList.add('hidden');
+        }
+    }
+
+    function getStockStatusClass(status) {
+        const classes = {
+            'in_stock': 'bg-success text-success',
+            'low_stock': 'bg-yellow-500 text-white',
+            'out_of_stock': 'bg-red-500 text-white'
+        };
+        return classes[status] || 'bg-gray-500 text-white';
+    }
+
+    // Update quantity when input changes
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('quantity');
+        if (quantityInput) {
+            quantityInput.addEventListener('change', function() {
+                const value = parseInt(this.value) || 1;
+                const maxQuantity = currentProduct?.stock_quantity || 99;
+                currentQuantity = Math.max(1, Math.min(value, maxQuantity));
+                this.value = currentQuantity;
+            });
+        }
+    });
+</script>
+{% endblock %}

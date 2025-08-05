@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - {{ business_name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #f97316; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .order-details { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .item { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .total { font-weight: bold; color: #f97316; font-size: 18px; }
+        .footer { text-align: center; padding: 20px; color: #666; }
+        .whatsapp-btn { display: inline-block; background: #25D366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ business_name }}</h1>
+            <h2>Order Confirmation</h2>
+        </div>
+        
+        <div class="content">
+            <p>Dear {{ order.first_name }} {{ order.last_name }},</p>
+            
+            <p>Thank you for your order! We've received your order and will contact you shortly via WhatsApp to confirm payment and delivery details.</p>
+            
+            <div class="order-details">
+                <h3>Order Details</h3>
+                <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+                <p><strong>Order Date:</strong> {{ order.created_at|date:"F d, Y" }}</p>
+                <p><strong>Status:</strong> {{ order.status|title }}</p>
+                
+                <h4>Items Ordered:</h4>
+                {% for item in order.items.all %}
+                <div class="item">
+                    <strong>{{ item.product_name }}</strong><br>
+                    Quantity: {{ item.quantity }} × ${{ item.product_price }}<br>
+                    Subtotal: ${{ item.total_price }}
+                </div>
+                {% endfor %}
+                
+                <div class="item total">
+                    <strong>Total: ${{ order.total_amount }}</strong>
+                </div>
+            </div>
+            
+            <div class="order-details">
+                <h3>Delivery Information</h3>
+                <p>
+                    {{ order.first_name }} {{ order.last_name }}<br>
+                    {{ order.address }}<br>
+                    {{ order.city }}, {{ order.postal_code }}<br>
+                    Phone: {{ order.phone }}
+                </p>
+                
+                {% if order.notes %}
+                <p><strong>Special Instructions:</strong><br>{{ order.notes }}</p>
+                {% endif %}
+            </div>
+            
+            <div style="text-align: center;">
+                <p><strong>Next Steps:</strong></p>
+                <p>We'll contact you via WhatsApp shortly to confirm your order and arrange payment.</p>
+                <p>You can also contact us directly:</p>
+                <a href="https://wa.me/{{ order.whatsapp_number }}" class="whatsapp-btn">
+                    💬 Chat on WhatsApp
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Thank you for choosing {{ business_name }}!</p>
+            <p>If you have any questions, feel free to contact us.</p>
+            <p>&copy; {{ order.created_at.year }} {{ business_name }}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

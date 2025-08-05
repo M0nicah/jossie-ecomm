@@ -1,0 +1,601 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} - Jossie Fancies{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section id="categoryHeader" class="relative py-20 overflow-hidden">
+    <!-- Dynamic Background -->
+    <div id="categoryBackground" class="absolute inset-0"></div>
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/60"></div>
+
+    <!-- Content -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <div class="mb-6">
+                <div id="categoryIcon"
+                    class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-white shadow-2xl">
+                    <!-- Icon will be set by JavaScript -->
+                </div>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">{{ category.name }}</h1>
+            <p class="text-xl text-white/90 max-w-2xl mx-auto drop-shadow-md">{{ category.description }}</p>
+        </div>
+    </div>
+
+    <!-- Decorative Elements -->
+    <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-48 translate-x-48"></div>
+    <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-32 -translate-x-32"></div>
+</section>
+
+<!-- Search and Filters -->
+<section class="bg-white border-b sticky top-16 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+            <!-- Search Bar -->
+            <div class="flex-1 max-w-full lg:max-w-md order-1">
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="Search in {{ category.name }}..."
+                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center order-2">
+                <!-- Sort Filter -->
+                <div class="relative min-w-0 flex-shrink-0">
+                    <select id="sortFilter"
+                        class="appearance-none bg-white border border-gray-300 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:w-auto min-w-[160px]">
+                        <option value="name">Sort by Name</option>
+                        <option value="price_low">Price: Low to High</option>
+                        <option value="price_high">Price: High to Low</option>
+                        <option value="-created_at">Newest First</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Featured Filter -->
+                <label class="flex items-center space-x-2 cursor-pointer px-4 py-3 rounded-xl border border-gray-200 hover:border-primary/30 transition-all whitespace-nowrap">
+                    <input type="checkbox" id="featuredFilter"
+                        class="rounded border-gray-300 text-primary focus:ring-primary flex-shrink-0">
+                    <span class="text-gray-700 text-sm">Featured Only</span>
+                </label>
+
+                <!-- Clear Filters -->
+                <button onclick="clearFilters()" class="px-4 py-3 text-gray-600 hover:text-primary transition-colors text-center whitespace-nowrap text-sm">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Grid -->
+<section class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Loading State -->
+        <div id="productsLoading" class="text-center py-12">
+            <lottie-player src="https://lottie.host/embed/3b4b9a32-fbbf-492c-978d-648c5fc484ea/FmjG7f5tu2.lottie"
+                background="transparent" speed="1" style="width: 120px; height: 120px; margin: 0 auto; display: block;"
+                loop autoplay>
+            </lottie-player>
+            <div class="mt-4">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange mx-auto" style="display: none;">
+                </div>
+            </div>
+            <p class="text-gray-600 font-medium mt-2">Loading {{ category.name }} products...</p>
+        </div>
+
+        <!-- Products Count -->
+        <div id="productsCount" class="mb-6 text-gray-600 hidden">
+            Showing <span id="resultCount">0</span> products in {{ category.name }}
+        </div>
+
+        <!-- Products Grid -->
+        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 hidden">
+            <!-- Products will be loaded here -->
+        </div>
+
+        <!-- No Results -->
+        <div id="noResults" class="text-center py-12 hidden">
+            <div class="max-w-md mx-auto">
+                <iframe src="https://lottie.host/embed/bd9bcedd-1ec4-48b5-8adc-932fa664328a/JEecHpAj4J.lottie" 
+                    style="width: 120px; height: 120px; border: none; margin: 0 auto; display: block;"
+                    frameborder="0">
+
+                </iframe>
+                <div class="w-32 h-32 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center"
+                    style="display: none;">
+                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">No products found in {{ category.name }}</h3>
+                <p class="text-gray-600 mb-6">We're working hard to stock this category. Try browsing other categories
+                    or check back soon!</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="clearFilters()"
+                        class="bg-gradient-to-r from-orange to-primary-dark text-white px-6 py-3 rounded-xl hover-glow transition-all transform hover:scale-105 font-semibold">
+                        Clear Filters
+                    </button>
+                    <a href="{% url 'products' %}"
+                        class="border-2 border-orange text-orange px-6 py-3 rounded-xl hover:bg-orange hover:text-white transition-all font-semibold">
+                        View All Products
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load More Button -->
+        <div id="loadMoreContainer" class="text-center mt-8 hidden">
+            <button onclick="loadMoreProducts()" id="loadMoreBtn"
+                class="bg-gray-100 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-200 transition-colors">
+                Load More Products
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Other Categories -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-dark mb-4">Explore Other Categories</h2>
+            <p class="text-xl text-gray-600">Discover more amazing products from our other collections</p>
+        </div>
+
+        <div id="otherCategories" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Other categories will be loaded here -->
+        </div>
+    </div>
+</section>
+
+<!-- Product Quick View Modal -->
+<div id="quickViewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div id="quickViewContent" class="p-6">
+            <!-- Quick view content will be loaded here -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentProducts = [];
+    let allProducts = [];
+    let currentPage = 1;
+    let totalProducts = 0;
+    let isLoading = false;
+    let hasMore = true;
+    const categoryId = {{ category.id }};
+    const categorySlug = '{{ category.slug }}';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+        setupCategoryHeader();
+        loadProducts();
+        loadOtherCategories();
+        setupEventListeners();
+    });
+
+    function setupCategoryHeader() {
+        const categoryBackground = document.getElementById('categoryBackground');
+        const categoryIcon = document.getElementById('categoryIcon');
+
+        // Define category themes with Material Symbols icons and background images
+        const categoryThemes = {
+            'kitchen': {
+                background: `url('https://images.unsplash.com/photo-1565538810643-b5bdb714032a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80') center/cover`,
+                icon: `<iconify-icon icon="material-symbols:restaurant" class="h-10 w-10 text-white" style="font-size: 40px;"></iconify-icon>`
+            },
+            'dining': {
+                background: `url('https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80') center/cover`,
+                icon: `<iconify-icon icon="material-symbols:table-restaurant" class="h-10 w-10 text-white" style="font-size: 40px;"></iconify-icon>`
+            },
+            'bedding': {
+                background: `url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80') center/cover`,
+                icon: `<iconify-icon icon="material-symbols:bed" class="h-10 w-10 text-white" style="font-size: 40px;"></iconify-icon>`
+            },
+            'storage': {
+                background: `url('https://images.unsplash.com/photo-1554995207-c18c203602cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover`,
+                icon: `<iconify-icon icon="material-symbols:inventory-2" class="h-10 w-10 text-white" style="font-size: 40px;"></iconify-icon>`
+            },
+            'bathroom': {
+                background: `url('https://images.unsplash.com/photo-1620626011761-996317b8d101?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80') center/cover`,
+                icon: `<iconify-icon icon="material-symbols:shower" class="h-10 w-10 text-white" style="font-size: 40px;"></iconify-icon>`
+            }
+        };
+
+        // Get theme for current category or use default
+        const theme = categoryThemes[categorySlug] || {
+            background: `url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80') center/cover`,
+            icon: `<iconify-icon icon="material-symbols:home" class="h-10 w-10 text-white" style="font-size: 40px;"></iconify-icon>`
+        };
+
+        // Apply theme
+        categoryBackground.style.background = theme.background;
+        categoryIcon.innerHTML = theme.icon;
+        categoryIcon.className += ' bg-white/20 backdrop-blur-sm';
+    }
+
+    function setupEventListeners() {
+        // Search input
+        document.getElementById('searchInput').addEventListener('input', debounce(loadProducts, 500));
+
+        // Filter changes
+        document.getElementById('sortFilter').addEventListener('change', loadProducts);
+        document.getElementById('featuredFilter').addEventListener('change', loadProducts);
+
+        // Close modal on outside click
+        document.getElementById('quickViewModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeQuickView();
+            }
+        });
+    }
+
+    async function loadProducts(reset = true) {
+        if (isLoading) return;
+
+        isLoading = true;
+
+        if (reset) {
+            currentPage = 1;
+            currentProducts = [];
+            hasMore = true;
+        }
+
+        const searchQuery = document.getElementById('searchInput').value;
+        const sortFilter = document.getElementById('sortFilter').value;
+        const featuredFilter = document.getElementById('featuredFilter').checked;
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        params.append('category', categoryId);
+        if (searchQuery) params.append('search', searchQuery);
+        if (sortFilter) params.append('sort', sortFilter);
+        if (featuredFilter) params.append('featured', 'true');
+        params.append('page', currentPage);
+
+        try {
+            showLoading(true);
+            const response = await apiCall(`/api/products/?${params.toString()}`);
+            const normalized = normalizeApiResponse(response);
+
+            if (reset) {
+                currentProducts = normalized.data;
+                totalProducts = normalized.count;
+            } else {
+                currentProducts = [...currentProducts, ...normalized.data];
+            }
+
+            hasMore = normalized.hasNext;
+
+            renderProducts();
+            updateProductsCount();
+
+        } catch (error) {
+            console.error('Error loading products:', error);
+            showToast('Error loading products', 'error');
+        } finally {
+            isLoading = false;
+            showLoading(false);
+        }
+    }
+
+    async function loadMoreProducts() {
+        if (!hasMore || isLoading) return;
+
+        currentPage++;
+        await loadProducts(false);
+    }
+
+    function renderProducts() {
+        const grid = document.getElementById('productsGrid');
+        const loading = document.getElementById('productsLoading');
+        const noResults = document.getElementById('noResults');
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+
+        loading.classList.add('hidden');
+
+        if (currentProducts.length === 0) {
+            grid.classList.add('hidden');
+            noResults.classList.remove('hidden');
+            loadMoreContainer.classList.add('hidden');
+            return;
+        }
+
+        noResults.classList.add('hidden');
+        grid.classList.remove('hidden');
+
+        grid.innerHTML = currentProducts.map(product => `
+            <div class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-primary/20">
+                <div class="relative overflow-hidden bg-gray-50">
+                    <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                         alt="${product.name}" 
+                         class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500 cursor-pointer"
+                         onclick="openQuickView(${product.id})">
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <div class="absolute top-2 left-2 flex flex-col space-y-1">
+                        ${product.is_featured ? `<span class="bg-primary text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">Featured</span>` : ''}
+                    </div>
+                    
+                    <div class="absolute top-2 right-2">
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium shadow-lg backdrop-blur-sm ${getStockStatusClass(product.stock_status)}">
+                            <span class="w-1.5 h-1.5 rounded-full mr-1.5 ${product.stock_status === 'in_stock' ? 'bg-emerald-500' : product.stock_status === 'low_stock' ? 'bg-amber-500' : product.stock_status === 'out_of_stock' ? 'bg-red-500' : 'bg-slate-500'}"></span>
+                            ${product.stock_status.replace('_', ' ').toUpperCase()}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="p-4 flex flex-col h-auto min-h-[200px]">
+                    <div class="flex-grow">
+                        <h3 class="font-bold text-dark mb-2 text-sm leading-tight group-hover:text-primary transition-colors cursor-pointer line-clamp-2" onclick="openQuickView(${product.id})">${product.name}</h3>
+                    
+                        <p class="text-gray-600 text-xs mb-3 line-clamp-2 leading-relaxed">${product.short_description}</p>
+                    </div>
+                    
+                    <div class="mt-auto space-y-3">
+                        <div class="text-sm font-bold text-primary">KSH ${parseFloat(product.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        
+                        <div class="flex items-center gap-2">
+                            <button onclick="addToCart(${product.id})" 
+                                    class="flex-1 bg-primary text-white px-3 py-2 rounded-lg hover:bg-orange-600 transition-all duration-300 font-semibold text-xs transform hover:scale-105 ${product.stock_status === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}>
+                                ${product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
+                            </button>
+                            
+                            <button onclick="openQuickView(${product.id})" 
+                                    class="flex-shrink-0 text-gray-500 hover:text-primary transition-colors p-2 rounded-lg hover:bg-gray-50"
+                                    title="Quick View">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Show/hide load more button
+        if (hasMore && currentProducts.length > 0) {
+            loadMoreContainer.classList.remove('hidden');
+        } else {
+            loadMoreContainer.classList.add('hidden');
+        }
+    }
+
+    function updateProductsCount() {
+        const countElement = document.getElementById('productsCount');
+        const resultCount = document.getElementById('resultCount');
+
+        if (currentProducts.length > 0) {
+            countElement.classList.remove('hidden');
+            resultCount.textContent = currentProducts.length;
+        } else {
+            countElement.classList.add('hidden');
+        }
+    }
+
+    async function loadOtherCategories() {
+        try {
+            const response = await apiCall('/api/categories/');
+            // Categories API returns direct array, not paginated
+            const allCategories = Array.isArray(response) ? response : (response.results || []);
+            const otherCategories = allCategories.filter(cat => cat.id !== categoryId);
+
+            const container = document.getElementById('otherCategories');
+            // Use Material Symbols icons for other categories
+            const otherCategoryThemes = {
+                'kitchen': {
+                    colorClass: 'bg-orange/20 group-hover:bg-orange/30',
+                    icon: `<iconify-icon icon="material-symbols:restaurant" class="h-8 w-8 text-orange" style="font-size: 32px;"></iconify-icon>`
+                },
+                'dining': {
+                    colorClass: 'bg-green-500/20 group-hover:bg-green-500/30',
+                    icon: `<iconify-icon icon="material-symbols:table-restaurant" class="h-8 w-8 text-green-500" style="font-size: 32px;"></iconify-icon>`
+                },
+                'bedding': {
+                    colorClass: 'bg-purple-500/20 group-hover:bg-purple-500/30',
+                    icon: `<iconify-icon icon="material-symbols:bed" class="h-8 w-8 text-purple-500" style="font-size: 32px;"></iconify-icon>`
+                },
+                'storage': {
+                    colorClass: 'bg-blue-500/20 group-hover:bg-blue-500/30',
+                    icon: `<iconify-icon icon="material-symbols:inventory-2" class="h-8 w-8 text-blue-500" style="font-size: 32px;"></iconify-icon>`
+                },
+                'bathroom': {
+                    colorClass: 'bg-teal-500/20 group-hover:bg-teal-500/30',
+                    icon: `<iconify-icon icon="material-symbols:shower" class="h-8 w-8 text-teal-500" style="font-size: 32px;"></iconify-icon>`
+                }
+            };
+
+            const defaultOtherTheme = {
+                colorClass: 'bg-orange/20 group-hover:bg-orange/30',
+                icon: `<iconify-icon icon="material-symbols:home" class="h-8 w-8 text-orange" style="font-size: 32px;"></iconify-icon>`
+            };
+
+            container.innerHTML = otherCategories.map(category => {
+                const theme = otherCategoryThemes[category.slug] || defaultOtherTheme;
+                return `
+                    <a href="/category/${category.slug}/" class="group block">
+                        <div class="bg-white rounded-xl p-6 text-center hover:bg-orange/5 transition-all duration-300 transform hover:scale-105 border border-gray-200 hover:border-orange/20 shadow-sm hover:shadow-lg">
+                            <div class="w-16 h-16 mx-auto mb-4 ${theme.colorClass} rounded-full flex items-center justify-center transition-all">
+                                ${theme.icon}
+                            </div>
+                            <h3 class="font-semibold text-gray-800 group-hover:text-orange transition-colors">${category.name}</h3>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+
+        } catch (error) {
+            console.error('Error loading other categories:', error);
+        }
+    }
+
+    async function openQuickView(productId) {
+        try {
+            showLoading(true);
+            const product = await apiCall(`/api/products/${productId}/`);
+
+            const modal = document.getElementById('quickViewModal');
+            const content = document.getElementById('quickViewContent');
+
+            content.innerHTML = `
+                <div class="flex justify-between items-start mb-6">
+                    <h2 class="text-2xl font-bold text-dark">${product.name}</h2>
+                    <button onclick="closeQuickView()" class="text-gray-500 hover:text-gray-700 p-2">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="mb-4">
+                            <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                                 alt="${product.name}" 
+                                 class="w-full h-80 object-cover rounded-lg">
+                        </div>
+                        ${product.images && product.images.length > 1 ? `
+                            <div class="grid grid-cols-4 gap-2">
+                                ${product.images.map(image => `
+                                    <img src="${image.image}" 
+                                         alt="${image.alt_text}" 
+                                         class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity"
+                                         onclick="changeMainImage('${image.image}')">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div>
+                        <div class="mb-4">
+                            <span class="text-sm text-gray-500 uppercase tracking-wide">${product.category?.name || 'Product'}</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <span class="text-3xl font-bold text-primary">KES ${parseFloat(product.price).toFixed(2)}</span>
+                                ${product.original_price ? `<span class="text-xl text-gray-500 line-through">KES ${parseFloat(product.original_price).toFixed(2)}</span>` : ''}
+                                ${product.has_discount ? `<span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">-${product.discount_percentage}% OFF</span>` : ''}
+                            </div>
+                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${getStockStatusClass(product.stock_status)}">
+                                <span class="w-2 h-2 rounded-full mr-2 ${product.stock_status === 'in_stock' ? 'bg-emerald-500' : product.stock_status === 'low_stock' ? 'bg-amber-500' : product.stock_status === 'out_of_stock' ? 'bg-red-500' : 'bg-slate-500'}"></span>
+                                ${product.stock_status.replace('_', ' ').toUpperCase()}
+                            </span>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <p class="text-gray-700 leading-relaxed">${product.description}</p>
+                        </div>
+                        
+                        ${product.weight || product.dimensions ? `
+                            <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-semibold mb-2">Product Details</h4>
+                                ${product.weight ? `<p class="text-sm text-gray-600 mb-1">Weight: ${product.weight} kg</p>` : ''}
+                                ${product.dimensions ? `<p class="text-sm text-gray-600">Dimensions: ${product.dimensions}</p>` : ''}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex space-x-4">
+                            <button onclick="addToCart(${product.id}); closeQuickView();" 
+                                    class="flex-1 bg-primary text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors font-semibold ${product.stock_status === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''}"
+                                    ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}>
+                                Add to Cart
+                            </button>
+                        </div>
+                        
+                        <div class="mt-4 text-sm text-gray-600">
+                            <p>SKU: ${product.sku}</p>
+                            <p>Stock: ${product.stock_quantity} available</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+        } catch (error) {
+            console.error('Error loading product details:', error);
+            showToast('Error loading product details', 'error');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function closeQuickView() {
+        document.getElementById('quickViewModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function changeMainImage(imageUrl) {
+        const mainImage = document.querySelector('#quickViewContent img');
+        if (mainImage) {
+            mainImage.src = imageUrl;
+        }
+    }
+
+    function clearFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('sortFilter').value = 'name';
+        document.getElementById('featuredFilter').checked = false;
+        loadProducts();
+    }
+
+    function getStockStatusClass(status) {
+        switch (status) {
+            case 'in_stock':
+                return 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 shadow-sm';
+            case 'low_stock':
+                return 'bg-amber-500/20 text-amber-700 border border-amber-500/30 shadow-sm';
+            case 'out_of_stock':
+                return 'bg-red-500/20 text-red-700 border border-red-500/30 shadow-sm';
+            default:
+                return 'bg-slate-500/20 text-slate-700 border border-slate-500/30 shadow-sm';
+        }
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    function showLoading(show) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (show) {
+            overlay?.classList.remove('hidden');
+        } else {
+            overlay?.classList.add('hidden');
+        }
+    }
+</script>
+{% endblock %}
