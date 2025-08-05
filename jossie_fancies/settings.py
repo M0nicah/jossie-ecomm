@@ -162,7 +162,11 @@ SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_SAVE_EVERY_REQUEST = True
 
 # WhatsApp Business Settings
+<<<<<<< HEAD
 WHATSAPP_BUSINESS_NUMBER = config('WHATSAPP_BUSINESS_NUMBER', default='+254 790 420 843')
+=======
+WHATSAPP_BUSINESS_NUMBER = config('WHATSAPP_BUSINESS_NUMBER', default='+254794748719')
+>>>>>>> 3460c35274d8d144d6c932f6fd76ae67d47fb6d3
 WHATSAPP_BUSINESS_NAME = config('WHATSAPP_BUSINESS_NAME', default='Jossie Fancies')
 
 # Email settings (for order notifications)
