@@ -1,1 +1,0 @@
-web: gunicorn jossie_fancies.wsgi --log-file -
