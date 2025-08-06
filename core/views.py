@@ -14,8 +14,14 @@ from .services import WhatsAppService, EmailService, OrderService
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Category.objects.filter(is_active=True)
     serializer_class = CategorySerializer
+    
+    def get_queryset(self):
+        try:
+            return Category.objects.filter(is_active=True)
+        except Exception as e:
+            # Return empty queryset if database issues
+            return Category.objects.none()
 
     @action(detail=True, methods=['get'])
     def products(self, request, pk=None):
@@ -45,7 +51,13 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Product.objects.filter(is_active=True).select_related('category').prefetch_related('images')
+    
+    def get_queryset(self):
+        try:
+            return Product.objects.filter(is_active=True).select_related('category').prefetch_related('images')
+        except Exception as e:
+            # Return empty queryset if database issues
+            return Product.objects.none()
     
     def get_serializer_class(self):
         if self.action == 'list':
