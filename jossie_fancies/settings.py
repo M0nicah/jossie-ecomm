@@ -11,8 +11,18 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
 import os
+
+# Try to import decouple, but provide fallback
+try:
+    from decouple import config
+except ImportError:
+    # Fallback for when decouple is not available
+    def config(key, default=None, cast=None):
+        value = os.environ.get(key, default)
+        if cast and value is not None:
+            return cast(value)
+        return value
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,12 +32,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-5o+$9xp$lx=2^jh0saav$(4-wbs)akc9(6$dj+92*)x9lc9wub')
+try:
+    SECRET_KEY = config('SECRET_KEY')
+except:
+    SECRET_KEY = 'django-insecure-5o+$9xp$lx=2^jh0saav$(4-wbs)akc9(6$dj+92*)x9lc9wub'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+try:
+    DEBUG = config('DEBUG', default=True, cast=bool)
+except:
+    DEBUG = False
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.vercel.app').split(',')
+try:
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.vercel.app').split(',')
+except:
+    ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -166,14 +185,26 @@ SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_SAVE_EVERY_REQUEST = True
 
 # WhatsApp Business Settings
-WHATSAPP_BUSINESS_NUMBER = config('WHATSAPP_BUSINESS_NUMBER', default='+254 790 420 843')
-WHATSAPP_BUSINESS_NAME = config('WHATSAPP_BUSINESS_NAME', default='Jossie Fancies')
+try:
+    WHATSAPP_BUSINESS_NUMBER = config('WHATSAPP_BUSINESS_NUMBER', default='+254 790 420 843')
+    WHATSAPP_BUSINESS_NAME = config('WHATSAPP_BUSINESS_NAME', default='Jossie Fancies')
+except:
+    WHATSAPP_BUSINESS_NUMBER = os.environ.get('WHATSAPP_BUSINESS_NUMBER', '+254 790 420 843')
+    WHATSAPP_BUSINESS_NAME = os.environ.get('WHATSAPP_BUSINESS_NAME', 'Jossie Fancies')
 
 # Email settings (for order notifications)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Development
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@jossiefancies.com')
+try:
+    EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+    EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+    DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@jossiefancies.com')
+except:
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@jossiefancies.com')
