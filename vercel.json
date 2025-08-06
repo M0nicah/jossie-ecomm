@@ -30,6 +30,7 @@
     }
   ],
   "env": {
-    "DJANGO_SETTINGS_MODULE": "jossie_fancies.settings"
+    "DJANGO_SETTINGS_MODULE": "jossie_fancies.settings",
+    "ALLOWED_HOSTS": ".vercel.app,*.vercel.app,jossie-fancies.vercel.app"
   }
 }
