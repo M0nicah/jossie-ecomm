@@ -68,7 +68,7 @@ yarn-error.log*
 *.tsbuildinfo
 
 # CSS Build Output (keep source, ignore built files)
-static/css/output.css
+# static/css/output.css  # Commented out to allow committing
 static/css/output.css.map
 
 # Logs

@@ -14,7 +14,5 @@
       "src": "/(.*)",
       "dest": "jossie_fancies/wsgi.py"
     }
-  ],
-  "installCommand": "pip install -r requirements.txt && npm install",
-  "buildCommand": "npm run build-css-prod && mkdir -p staticfiles/css && cp static/css/output.css staticfiles/css/ && python manage.py collectstatic --noinput || true"
+  ]
 }
