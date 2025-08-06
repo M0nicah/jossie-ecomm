@@ -49,6 +49,13 @@ if [ -f "static/css/output.css" ]; then
     cp -v static/css/output.css staticfiles/css/output.css
     cp -v static/css/test.css staticfiles/css/test.css 2>/dev/null || true
     cp -v static/css/input.css staticfiles/css/input.css 2>/dev/null || true
+    
+    # Also copy to public directory for Vercel
+    echo "Copying CSS files to public directory for Vercel..."
+    mkdir -p public/static/css
+    mkdir -p public/static/images
+    cp -v static/css/output.css public/static/css/output.css
+    cp -v static/images/* public/static/images/ 2>/dev/null || true
 else
     echo "ERROR: output.css was NOT created"
     echo "Creating fallback CSS file..."

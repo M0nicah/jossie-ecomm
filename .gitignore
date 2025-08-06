@@ -199,3 +199,4 @@ venv.bak/
 uploads/
 cache/
 .cache/
+.vercel

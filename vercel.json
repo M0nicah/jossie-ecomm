@@ -7,18 +7,18 @@
       "use": "@vercel/python"
     },
     {
-      "src": "staticfiles/**",
+      "src": "public/**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/static/(.*)",
-      "dest": "/staticfiles/$1"
+      "dest": "/public/static/$1"
     },
     {
       "src": "/favicon.ico",
-      "dest": "/staticfiles/images/favicon.jpg"
+      "dest": "/public/static/images/favicon.jpg"
     },
     {
       "src": "/media/(.*)",
