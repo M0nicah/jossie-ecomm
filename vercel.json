@@ -22,7 +22,7 @@
     },
     {
       "src": "/favicon.ico",
-      "dest": "/staticfiles/images/favicon.jpg"
+      "dest": "/staticfiles/images/favicon.ico"
     },
     {
       "src": "/media/(.*)",

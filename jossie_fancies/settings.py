@@ -39,9 +39,9 @@ except:
 
 # SECURITY WARNING: don't run with debug turned on in production!
 try:
-    DEBUG = config('DEBUG', default=False, cast=bool)
+    DEBUG = config('DEBUG', default=True, cast=bool)  # Enable debug temporarily for Vercel
 except:
-    DEBUG = False
+    DEBUG = True  # Enable debug to see error details
 
 # For Vercel deployment - allow all subdomains
 ALLOWED_HOSTS = [
