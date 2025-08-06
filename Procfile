@@ -1,1 +1,1 @@
-web: python3 -m gunicorn jossie_fancies.wsgi --log-file -
+web: gunicorn jossie_fancies.wsgi --log-file -
