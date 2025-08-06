@@ -150,12 +150,13 @@ STATICFILES_DIRS = [
 ]
 
 # Whitenoise settings for serving static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-# Enable WhiteNoise compression and caching
+# WhiteNoise settings
 WHITENOISE_COMPRESS_OFFLINE = False
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_AUTOREFRESH = True
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'zip', 'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br']
 
 # Media files
 MEDIA_URL = '/media/'

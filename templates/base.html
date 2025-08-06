@@ -13,8 +13,33 @@
     <link rel="manifest" href="{% static 'site.webmanifest' %}">
     <title>{% block title %}Jossie Fancies - Premium Home Goods{% endblock %}</title>
 
+    <!-- Critical inline CSS for immediate rendering -->
+    <style>
+        /* Critical CSS to prevent FOUC */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.6; color: #333; }
+        .loading-spinner { width: 40px; height: 40px; margin: 20px auto; border: 4px solid #f3f3f3; border-top: 4px solid #FF9A00; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .bg-primary { background-color: #FF9A00; }
+        .text-primary { color: #FF9A00; }
+        .bg-white { background-color: white; }
+        .text-white { color: white; }
+        .hidden { display: none !important; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .rounded { border-radius: 0.25rem; }
+        .shadow { box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    </style>
+
     <!-- Tailwind CSS - Production Build -->
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    
+    <!-- Test CSS to verify static files working -->
+    <link href="{% static 'css/test.css' %}" rel="stylesheet">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

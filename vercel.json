@@ -16,5 +16,5 @@
     }
   ],
   "installCommand": "pip install -r requirements.txt && npm install",
-  "buildCommand": "chmod +x build_files.sh && ./build_files.sh"
+  "buildCommand": "npm run build-css-prod && mkdir -p staticfiles/css && cp static/css/output.css staticfiles/css/ && python manage.py collectstatic --noinput || true"
 }
