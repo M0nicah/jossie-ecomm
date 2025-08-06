@@ -1,37 +1,23 @@
 {
+  "version": 2,
   "buildCommand": "bash build_files.sh",
   "builds": [
     {
       "src": "jossie_fancies/wsgi.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "staticfiles/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
-    {
-      "src": "/static/css/(.*)",
-      "dest": "/staticfiles/css/$1",
-      "headers": {
-        "Content-Type": "text/css"
-      }
-    },
-    {
-      "src": "/static/images/(.*)",
-      "dest": "/staticfiles/images/$1"
-    },
-    {
-      "src": "/static/js/(.*)",
-      "dest": "/staticfiles/js/$1"
-    },
     {
       "src": "/static/(.*)",
       "dest": "/staticfiles/$1"
     },
     {
       "src": "/favicon.ico",
-      "dest": "/staticfiles/images/favicon.jpg"
-    },
-    {
-      "src": "/favicon.png",
       "dest": "/staticfiles/images/favicon.jpg"
     },
     {
