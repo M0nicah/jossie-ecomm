@@ -31,10 +31,5 @@
   ],
   "env": {
     "DJANGO_SETTINGS_MODULE": "jossie_fancies.settings"
-  },
-  "functions": {
-    "jossie_fancies/wsgi.py": {
-      "runtime": "python3.9"
-    }
   }
 }
