@@ -46,7 +46,16 @@ except:
 try:
     ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.vercel.app,*.vercel.app').split(',')
 except:
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+        '.vercel.app',
+        '*.vercel.app', 
+        'jossie-fancies.vercel.app',
+        'jossie-fancies-abzx0wt2u-m0nicahs-projects.vercel.app',
+        'jossie-fancies-1trw8bj7a-m0nicahs-projects.vercel.app',
+        '*'
+    ]
 
 
 # Application definition
