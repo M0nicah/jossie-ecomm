@@ -150,15 +150,12 @@ STATICFILES_DIRS = [
 ]
 
 # Whitenoise settings for serving static files
-if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-else:
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Enable WhiteNoise compression and caching
 WHITENOISE_COMPRESS_OFFLINE = True
 WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = DEBUG
+WHITENOISE_AUTOREFRESH = False
 
 # Media files
 MEDIA_URL = '/media/'
