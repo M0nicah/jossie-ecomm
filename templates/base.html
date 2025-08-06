@@ -1,13 +1,19 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon - Modern Standards -->
+    <link rel="icon" href="{% static 'images/favicon.jpg' %}" type="image/jpeg" sizes="32x32">
+    <link rel="icon" href="{% static 'images/favicon.jpg' %}" type="image/jpeg" sizes="16x16">
+    <link rel="apple-touch-icon" href="{% static 'images/favicon.jpg' %}" sizes="180x180">
+    <meta name="theme-color" content="#FF9A00">
+    <link rel="manifest" href="{% static 'site.webmanifest' %}">
     <title>{% block title %}Jossie Fancies - Premium Home Goods{% endblock %}</title>
 
     <!-- Tailwind CSS - Production Build -->
-    {% load static %}
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
 
     <!-- Google Fonts -->
@@ -221,15 +227,14 @@
     </div>
 
     <!-- Main Navigation -->
-    <nav class="glass-nav bg-white/70 backdrop-blur-lg sticky top-0 z-50 ">
+    <nav class=" bg-white/70 backdrop-blur-lg sticky top-0 z-50 ">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20">
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="{% url 'home' %}" class="flex-shrink-0 flex items-center group">
-                        <div
-                            class="w-12 h-12 bg-gradient-to-br from-orange to-primary-dark rounded-full flex items-center justify-center mr-3 glow-orange group-hover:hover-glow transition-all duration-300">
-                            <span class="text-white font-bold text-xl">JF</span>
+                        <div class="w-12 h-12 rounded-full overflow-hidden mr-3 ring-2 ring-orange/30 group-hover:ring-orange/60 transition-all duration-300 shadow-lg group-hover:shadow-xl">
+                            <img src="{% static 'images/favicon.jpg' %}" alt="Jossie Fancies Logo" class="w-full h-full object-cover">
                         </div>
                         <div>
                             <h1 class="text-2xl font-bold text-gray-800 group-hover:text-orange transition-colors">

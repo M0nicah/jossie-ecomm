@@ -1,0 +1,21 @@
+{
+    "name": "Jossie Fancies",
+    "short_name": "Jossie Fancies",
+    "description": "Premium Home Goods",
+    "icons": [
+        {
+            "src": "/static/images/favicon.jpg",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "/static/images/favicon.jpg",
+            "sizes": "512x512",
+            "type": "image/jpeg"
+        }
+    ],
+    "theme_color": "#FF9A00",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "/"
+}
