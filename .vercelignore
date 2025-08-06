@@ -27,8 +27,7 @@ db.sqlite3
 media/
 *.sqlite3
 
-# Static files
-/static/
+# Node modules (but not static files)
 node_modules/
 
 # IDE
@@ -47,7 +46,6 @@ node_modules/
 *.pyo
 *.pyd
 .sass-cache
-*.css.map
 *.js.map
 
 # Git
@@ -55,7 +53,6 @@ node_modules/
 .gitignore
 
 # Documentation
-*.md
 docs/
 README.rst
 
@@ -68,3 +65,8 @@ test_*.py
 build/
 dist/
 *.egg-info/
+
+# IMPORTANT: Do NOT ignore static files
+# !static/
+# !staticfiles/
+# !static/css/output.css

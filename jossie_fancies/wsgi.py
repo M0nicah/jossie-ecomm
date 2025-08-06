@@ -21,7 +21,23 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'jossie_fancies.settings')
 # Import Django and create the WSGI application
 try:
     from django.core.wsgi import get_wsgi_application
+    from whitenoise import WhiteNoise
+    
     application = get_wsgi_application()
+    
+    # Wrap the application with WhiteNoise for static file serving
+    application = WhiteNoise(
+        application,
+        root=os.path.join(BASE_DIR, 'staticfiles'),
+        prefix='/static/'
+    )
+    
+    # Add static files directory
+    application.add_files(
+        os.path.join(BASE_DIR, 'static'),
+        prefix='/static/'
+    )
+    
 except Exception as e:
     print(f"Error loading Django application: {e}")
     # Create a simple error application for debugging

@@ -3,22 +3,29 @@
 # Build script for Vercel
 echo "BUILD START"
 
-# Create a virtual environment
-echo "Creating virtual environment..."
-python3.9 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-echo "Installing requirements..."
+# Install Python dependencies
+echo "Installing Python dependencies..."
 pip install -r requirements.txt
 
-# Make migrations
-echo "Making migrations..."
-python manage.py makemigrations --noinput
-python manage.py migrate --noinput
+# Install Node dependencies for Tailwind CSS
+echo "Installing Node dependencies..."
+npm install
 
-# Collect static files
+# Build Tailwind CSS
+echo "Building Tailwind CSS..."
+npm run build-css-prod
+
+# Create directories
+echo "Creating directories..."
+mkdir -p staticfiles
+mkdir -p static/css
+
+# Run Django collectstatic
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
+
+# List static files for debugging
+echo "Static files collected:"
+ls -la staticfiles/
 
 echo "BUILD END"
