@@ -150,12 +150,12 @@ STATICFILES_DIRS = [
 ]
 
 # Whitenoise settings for serving static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Enable WhiteNoise compression and caching
-WHITENOISE_COMPRESS_OFFLINE = True
+WHITENOISE_COMPRESS_OFFLINE = False
 WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = False
+WHITENOISE_AUTOREFRESH = True
 
 # Media files
 MEDIA_URL = '/media/'

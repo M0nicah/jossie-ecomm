@@ -8,44 +8,12 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
 """
 
 import os
-import sys
-from pathlib import Path
 
-# Add the project directory to the Python path
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(BASE_DIR))
+from django.core.wsgi import get_wsgi_application
 
-# Set the Django settings module
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'jossie_fancies.settings')
 
-# Import Django and create the WSGI application
-try:
-    from django.core.wsgi import get_wsgi_application
-    from whitenoise import WhiteNoise
-    
-    application = get_wsgi_application()
-    
-    # Wrap the application with WhiteNoise for static file serving
-    application = WhiteNoise(
-        application,
-        root=os.path.join(BASE_DIR, 'staticfiles'),
-        prefix='/static/'
-    )
-    
-    # Add static files directory
-    application.add_files(
-        os.path.join(BASE_DIR, 'static'),
-        prefix='/static/'
-    )
-    
-except Exception as e:
-    print(f"Error loading Django application: {e}")
-    # Create a simple error application for debugging
-    def application(environ, start_response):
-        status = '500 Internal Server Error'
-        headers = [('Content-Type', 'text/plain')]
-        start_response(status, headers)
-        return [f"Error loading Django application: {str(e)}".encode('utf-8')]
+application = get_wsgi_application()
 
-# Vercel expects a specific handler function
+# Vercel expects 'app' variable
 app = application
