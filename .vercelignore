@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+*.sqlite3
+
+# Static files
+/static/
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Project specific
+.env
+.env.local
+.env.*.local
+*.pyc
+*.pyo
+*.pyd
+.sass-cache
+*.css.map
+*.js.map
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+README.rst
+
+# Tests
+tests/
+test_*.py
+*_test.py
+
+# Build files
+build/
+dist/
+*.egg-info/
