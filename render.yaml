@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: jossiefancies
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn jossie_fancies.wsgi:application"
+    plan: free
+    envVars:
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: "jossiefancies.onrender.com,.onrender.com"
+      - key: PYTHON_VERSION
+        value: "3.11.0"

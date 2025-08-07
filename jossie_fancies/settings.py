@@ -25,7 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-5o+$9xp$lx=2^jh0saav$(4-wbs)akc9(6$dj+92*)x9lc9wub')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+# Auto-detect production environment
+DEBUG = config('DEBUG', default=not os.environ.get('RENDER'), cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,jossiefancies.onrender.com,.onrender.com').split(',')
 
@@ -131,11 +132,13 @@ STATICFILES_DIRS = [
 ]
 
 # Whitenoise settings for serving static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Use simpler storage for better compatibility
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-# Whitenoise configuration
+# Whitenoise configuration for production
 WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = True
+WHITENOISE_AUTOREFRESH = False  # Disable in production for performance
+WHITENOISE_MAX_AGE = 31536000  # 1 year cache
 
 # Ensure CSS files are served with correct MIME type
 WHITENOISE_MIMETYPES = {
