@@ -15,36 +15,36 @@ class WhatsAppService:
     @staticmethod
     def generate_order_message(order) -> str:
         """Generate WhatsApp message for order"""
-        message = f"""🛍️ New Order - {settings.WHATSAPP_BUSINESS_NAME}
+        message = f"""New Order - {settings.WHATSAPP_BUSINESS_NAME}
 
-📋 Order Details:
-• Order ID: {order.order_id}
-• Customer: {order.first_name} {order.last_name}
-• Email: {order.email}
-• Phone: {order.phone}
+Order Details:
+- Order ID: {order.order_id}
+- Customer: {order.first_name} {order.last_name}
+- Email: {order.email}
+- Phone: {order.phone}
 
-📦 Items Ordered:"""
+Items Ordered:"""
         
         for item in order.items.all():
-            message += f"\n• {item.product_name} x{item.quantity} - KES {int(item.product_price):,}"
+            message += f"\n- {item.product_name} x{item.quantity} - KES {int(item.product_price):,}"
         
         message += f"""
 
-💰 Subtotal: KES {int(order.subtotal_amount):,}
-🚚 Shipping: KES {int(order.shipping_fee):,}
-💰 Total Amount: KES {int(order.total_amount):,}
+Subtotal: KES {int(order.subtotal_amount):,}
+Shipping: KES {int(order.shipping_fee):,}
+Total Amount: KES {int(order.total_amount):,}
 
-📍 Delivery Instructions:
+Delivery Instructions:
 {order.delivery_notes}"""
 
         if order.notes:
-            message += f"\n\n📝 Special Instructions:\n{order.notes}"
+            message += f"\n\nSpecial Instructions:\n{order.notes}"
         
         message += f"""
 
-✅ Please confirm this order to proceed with payment and delivery.
+Please confirm this order to proceed with payment and delivery.
 
-Thank you for choosing {settings.WHATSAPP_BUSINESS_NAME}! 🙏"""
+Thank you for choosing {settings.WHATSAPP_BUSINESS_NAME}!"""
         
         return message
     
@@ -52,7 +52,8 @@ Thank you for choosing {settings.WHATSAPP_BUSINESS_NAME}! 🙏"""
     def generate_whatsapp_url(order) -> str:
         """Generate WhatsApp URL for order"""
         message = WhatsAppService.generate_order_message(order)
-        encoded_message = urllib.parse.quote(message)
+        # Use quote_plus for better URL encoding, especially for mobile
+        encoded_message = urllib.parse.quote_plus(message)
         phone_number = settings.WHATSAPP_BUSINESS_NUMBER.replace('+', '').replace(' ', '').replace('-', '')
         
         return f"https://wa.me/{phone_number}?text={encoded_message}"
@@ -60,7 +61,7 @@ Thank you for choosing {settings.WHATSAPP_BUSINESS_NAME}! 🙏"""
     @staticmethod
     def generate_admin_notification_message(order) -> str:
         """Generate admin notification message"""
-        message = f"""🔔 New Order Alert!
+        message = f"""New Order Alert!
 
 Order #{str(order.order_id).split('-')[0]}
 Customer: {order.first_name} {order.last_name}
