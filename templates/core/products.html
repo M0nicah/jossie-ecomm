@@ -9,7 +9,7 @@
     <div class="absolute inset-0 bg-black/60"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center modern-card p-8 rounded-2xl border border-orange/30 bg-white/10 backdrop-blur-sm max-w-3xl mx-auto">
+        <div class="text-center  p-8 rounded-2xl border border-orange/30 bg-white/10 backdrop-blur-sm max-w-3xl mx-auto">
             <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Shop</h1>
             <p class="text-xl text-white/90 max-w-2xl mx-auto">Discover our curated collection of premium home goods,
                 carefully selected for quality and style. </p>
@@ -73,7 +73,7 @@
                     </div>
 
                     <!-- Featured Filter -->
-                    <label class="flex items-center space-x-2 cursor-pointer modern-card px-4 py-3 rounded-xl border border-gray-200 hover:border-orange/30 transition-all whitespace-nowrap">
+                    <label class="flex items-center space-x-2 cursor-pointer px-4 py-3 rounded-xl border border-gray-200 hover:border-orange/30 transition-all whitespace-nowrap">
                         <input type="checkbox" name="featured" value="true" id="featuredFilter" {% if current_filters.featured == "true" %}checked{% endif %}
                             class="rounded border-gray-300 text-orange focus:ring-orange bg-white flex-shrink-0">
                         <span class="text-gray-800 text-sm">Featured Only</span>
@@ -181,7 +181,7 @@
         {% else %}
             <!-- No Results -->
             <div class="text-center py-12">
-                <div class="modern-card p-8 rounded-2xl border border-gray-200 max-w-md mx-auto">
+                <div class="p-8 rounded-2xl border border-gray-200 max-w-md mx-auto">
                     <iframe src="https://lottie.host/embed/234d9eef-555d-467a-906a-25b15556944f/TLxZDiIxxm.lottie"
                         style="width: 120px; height: 120px; border: none; margin: 0 auto; display: block;"
                         frameborder="0">
@@ -234,7 +234,7 @@
 <!-- Product Quick View Modal -->
 <div id="quickViewModal"
     class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-    <div class="modern-card rounded-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200">
+    <div class=" rounded-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200">
         <div id="quickViewContent" class="p-6">
             <!-- Quick view content will be loaded here -->
         </div>
@@ -412,7 +412,7 @@
                         </div>
                         
                         ${product.weight || product.dimensions ? `
-                            <div class="mb-6 modern-card p-4 rounded-lg border border-gray-200">
+                            <div class="mb-6 p-4 rounded-lg border border-gray-200">
                                 <h4 class="font-semibold mb-2 text-gray-800">Product Details</h4>
                                 ${product.weight ? `<p class="text-sm text-gray-600 mb-1">Weight: ${product.weight} kg</p>` : ''}
                                 ${product.dimensions ? `<p class="text-sm text-gray-600">Dimensions: ${escapeHtml(product.dimensions)}</p>` : ''}

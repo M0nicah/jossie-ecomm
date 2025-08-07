@@ -12,3 +12,7 @@ services:
         value: "jossiefancies.onrender.com,.onrender.com"
       - key: PYTHON_VERSION
         value: "3.11.0"
+
+databases:
+  - name: jossiefancies-db
+    plan: free
