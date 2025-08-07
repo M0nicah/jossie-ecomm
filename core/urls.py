@@ -4,8 +4,8 @@ from . import views
 from . import auth_views
 
 router = DefaultRouter()
-router.register(r'categories', views.CategoryViewSet)
-router.register(r'products', views.ProductViewSet)
+router.register(r'categories', views.CategoryViewSet, basename='category')
+router.register(r'products', views.ProductViewSet, basename='product')
 router.register(r'cart', views.CartViewSet, basename='cart')
 router.register(r'orders', views.OrderViewSet)
 router.register(r'stock-history', views.StockHistoryViewSet)
