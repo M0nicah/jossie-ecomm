@@ -727,13 +727,5 @@ Thank you for choosing Jossie Fancies!`;
         window.location.href = '{% url "products" %}';
     }
 
-    function showLoading(show) {
-        const overlay = document.getElementById("loadingOverlay");
-        if (show) {
-            overlay.classList.remove("hidden");
-        } else {
-            overlay.classList.add("hidden");
-        }
-    }
 </script>
 {% endblock %}
