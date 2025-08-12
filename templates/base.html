@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Jossie Fancies - Premium Home Goods{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo.jpg' %}">
 
     <!-- Tailwind CSS - Production Build -->
     {% load static %}
@@ -228,15 +231,12 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="{% url 'home' %}" class="flex-shrink-0 flex items-center group">
-                        <div
-                            class="w-12 h-12 bg-gradient-to-br from-orange to-primary-dark rounded-full flex items-center justify-center mr-3 glow-orange group-hover:hover-glow transition-all duration-300">
-                            <span class="text-white font-bold text-xl">JF</span>
-                        </div>
+                        <img src="{% static 'images/logo.jpg' %}" alt="Jossie Fancies Logo" 
+                             class="w-12 h-12 rounded-full mr-3 glow-orange group-hover:hover-glow transition-all duration-300 object-cover">
                         <div>
                             <h1 class="text-2xl font-bold text-gray-800 group-hover:text-orange transition-colors">
                                 Jossie Fancies</h1>
                             <p class="text-xs text-gray-500">Premium Home Goods</p>
-
                         </div>
                     </a>
                 </div>
@@ -465,7 +465,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="col-span-1 md:col-span-2">
-                    <h3 class="text-2xl font-bold text-orange mb-4">Jossie Fancies</h3>
+                    <div class="flex items-center mb-4">
+                        <img src="{% static 'images/logo.jpg' %}" alt="Jossie Fancies Logo" 
+                             class="w-10 h-10 rounded-full mr-3 object-cover">
+                        <h3 class="text-2xl font-bold text-orange">Jossie Fancies</h3>
+                    </div>
                     <p class="text-gray-300 mb-4">Premium home goods for the modern lifestyle. Quality products that
                         bring style and functionality to your home.</p>
 
