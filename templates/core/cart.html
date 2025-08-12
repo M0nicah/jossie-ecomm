@@ -451,8 +451,9 @@
             closeCheckoutModal();
             document.getElementById('orderSuccessModal').classList.remove('hidden');
 
-            // Reload cart (should be empty now)
-            await loadCartData();
+            // Clear cart locally (avoid unnecessary API call)
+            currentCart = { items: [], total_items: 0, total_price: 0 };
+            renderCart();
 
             // Create WhatsApp message
             createWhatsAppMessage(order);
@@ -514,7 +515,7 @@ Please confirm this order to proceed with payment and delivery.`;
         if (show) {
             overlay.classList.remove('hidden');
         } else {
-            overlay.classList.dd('hidden');
+            overlay.classList.add('hidden');
         }
     }
 </script>
