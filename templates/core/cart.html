@@ -468,21 +468,31 @@
 
     function createWhatsAppMessage(order) {
         // Create message text
-        const message = `New Order from Jossie Fancies!
+        const message = `Good day,
 
- Order ID: ${order.order_id}
- Customer: ${order.first_name} ${order.last_name}
- Email: ${order.email}
- Phone: ${order.phone}
+I would like to place the following order through your website:
 
- Order Items:
-${order.items.map(item => `• ${item.product_name} x${item.quantity} - KSH ${parseFloat(item.product_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`).join('\n')}
+ORDER SUMMARY
+Reference: ${order.order_id}
+Date: ${new Date().toLocaleDateString()}
 
- Total: KSH ${parseFloat(order.total_amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+CUSTOMER INFORMATION
+Name: ${order.first_name} ${order.last_name}
+Phone: ${order.phone}
+Email: ${order.email}
 
-${order.notes ? `Notes: ${order.notes}` : ''}
+ITEMS ORDERED
+${order.items.map((item, index) => `${index + 1}. ${item.product_name}
+   Quantity: ${item.quantity}
+   Price: KSH ${parseFloat(item.product_price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`).join('\n\n')}
 
-Please confirm this order to proceed with payment and delivery.`;
+TOTAL AMOUNT: KSH ${parseFloat(order.total_amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
+${order.notes ? `DELIVERY NOTES: ${order.notes}` : ''}
+
+Please confirm receipt of this order and provide payment instructions.
+
+Thank you.`;
 
         const encodedMessage = encodeURIComponent(message);
         const whatsappNumber = order.whatsapp_number || '+254790420843';
