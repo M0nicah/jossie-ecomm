@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.utils import timezone
+from django.core.files.base import ContentFile
+from io import BytesIO
+from pathlib import Path
+from PIL import Image
 import uuid
 
 
@@ -68,6 +72,16 @@ class Product(models.Model):
         return self.images.first()
 
     @property
+    def primary_image_url(self):
+        image = self.primary_image
+        if image:
+            if image.optimized_image:
+                return image.optimized_image.url
+            if image.image:
+                return image.image.url
+        return None
+
+    @property
     def has_discount(self):
         return self.original_price and self.original_price > self.price
 
@@ -85,6 +99,7 @@ class ProductImage(models.Model):
     is_primary = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
+    optimized_image = models.ImageField(upload_to='products/optimized/', blank=True, null=True, editable=False)
 
     class Meta:
         ordering = ['order', 'created_at']
@@ -92,10 +107,39 @@ class ProductImage(models.Model):
     def __str__(self):
         return f"{self.product.name} - Image {self.order}"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_image = self.image
+
     def save(self, *args, **kwargs):
+        generate_optimized = kwargs.pop('generate_optimized', True)
         if self.is_primary:
-            ProductImage.objects.filter(product=self.product, is_primary=True).update(is_primary=False)
+            ProductImage.objects.filter(product=self.product, is_primary=True).exclude(pk=self.pk).update(is_primary=False)
         super().save(*args, **kwargs)
+        if generate_optimized and self.image:
+            if self.image != self._original_image or not self.optimized_image:
+                self._generate_optimized_image()
+        self._original_image = self.image
+
+    def _generate_optimized_image(self):
+        try:
+            if self.optimized_image:
+                self.optimized_image.delete(save=False)
+
+            with self.image.open('rb') as original:
+                img = Image.open(original)
+                img = img.convert('RGB')
+                img.thumbnail((1200, 1200), Image.LANCZOS)
+
+                buffer = BytesIO()
+                img.save(buffer, format='JPEG', quality=85, optimize=True)
+                buffer.seek(0)
+
+                filename = Path(self.image.name).stem + '_web.jpg'
+                self.optimized_image.save(filename, ContentFile(buffer.read()), save=False)
+                super().save(update_fields=['optimized_image'], generate_optimized=False)
+        except Exception as exc:
+            print(f"Failed to generate optimized image for {self.pk}: {exc}")
 
 
 class Cart(models.Model):

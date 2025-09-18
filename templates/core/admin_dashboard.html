@@ -483,8 +483,8 @@
             
             grid.innerHTML = productsData.map(product => `
                 <div class="bg-white rounded-lg shadow-sm border p-4">
-                    <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
-                         alt="${product.name}" 
+                    <img src="${product.primary_image?.optimized_image || product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                         alt="${product.name}" loading="lazy" decoding="async"
                          class="w-full h-32 object-cover rounded mb-3">
                     <h3 class="font-semibold text-dark mb-2">${product.name}</h3>
                     <p class="text-gray-600 text-sm mb-3">${product.short_description}</p>
@@ -521,8 +521,8 @@
                     <tr class="border-b hover:bg-gray-50">
                         <td class="py-3 px-4">
                             <div class="flex items-center space-x-3">
-                                <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
-                                     alt="${product.name}" 
+                                <img src="${product.primary_image?.optimized_image || product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                                     alt="${product.name}" loading="lazy" decoding="async"
                                      class="w-10 h-10 object-cover rounded">
                                 <span class="font-medium">${product.name}</span>
                             </div>
@@ -706,7 +706,7 @@
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = filteredProducts.map(product => `
                 <div class="bg-white rounded-lg shadow-sm border p-4">
-                    <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                    <img src="${product.primary_image?.optimized_image || product.primary_image?.image || '/static/images/placeholder.svg'}" 
                          alt="${product.name}" 
                          class="w-full h-32 object-cover rounded mb-3">
                     <h3 class="font-semibold text-dark mb-2">${product.name}</h3>

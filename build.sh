@@ -13,15 +13,23 @@ npm run build-css-prod
 # Run database migrations
 python manage.py migrate
 
-# Create superuser if it doesn't exist
-python manage.py shell -c "
+# Create superuser if environment variables are provided
+if [[ -n "$DJANGO_SUPERUSER_USERNAME" && -n "$DJANGO_SUPERUSER_EMAIL" && -n "$DJANGO_SUPERUSER_PASSWORD" ]]; then
+  python manage.py shell -c "
 from django.contrib.auth.models import User;
-if not User.objects.filter(username='admin').exists():
-    User.objects.create_superuser('admin', 'admin@jossiefancies.com', 'JossieFancies2024!')
-    print('Superuser created: admin')
+import os;
+username = os.environ['DJANGO_SUPERUSER_USERNAME'];
+email = os.environ['DJANGO_SUPERUSER_EMAIL'];
+password = os.environ['DJANGO_SUPERUSER_PASSWORD'];
+if not User.objects.filter(username=username).exists():
+    User.objects.create_superuser(username, email, password)
+    print(f'Superuser created: {username}')
 else:
-    print('Superuser already exists')
+    print(f'Superuser already exists: {username}')
 "
+else
+  echo "Skipping superuser creation. Provide DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_EMAIL, and DJANGO_SUPERUSER_PASSWORD to auto-create one."
+fi
 
 # Collect Django static files
 python manage.py collectstatic --noinput

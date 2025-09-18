@@ -301,8 +301,8 @@
         container.innerHTML = currentCart.items.map(item => `
             <div class="p-6 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <div class="flex-shrink-0">
-                    <img src="${item.product.primary_image?.image || '/static/images/placeholder.svg'}" 
-                         alt="${item.product.name}" 
+                    <img src="${item.product.primary_image?.optimized_image || item.product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                         alt="${item.product.name}" loading="lazy" decoding="async"
                          class="w-20 h-20 object-cover rounded-lg">
                 </div>
                 
@@ -499,29 +499,14 @@ Thank you.`;
         const cleanNumber = whatsappNumber.replace('+', '');
         
         // Use backend-provided URL if available
-        if (order.whatsapp_url) {
-            setTimeout(() => {
-                openWhatsAppLink(order.whatsapp_url);
-            }, 2000);
-        } else {
-            const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
-            setTimeout(() => {
-                openWhatsAppLink(whatsappUrl);
-            }, 2000);
-        }
+        const targetUrl = order.whatsapp_url || `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+        setTimeout(() => {
+            openWhatsAppLink(targetUrl);
+        }, 500);
     }
 
     function openWhatsAppLink(url) {
-        // Simple approach: detect mobile and use appropriate method
-        const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (isMobile) {
-            // On mobile: use location.href to trigger app or browser redirect
-            window.location.href = url;
-        } else {
-            // On desktop: open in new tab
-            window.open(url, '_blank');
-        }
+        window.location.href = url;
     }
 
     function closeOrderSuccessModal() {

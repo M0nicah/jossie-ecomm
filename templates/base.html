@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% load static %}
+    {% load static cache %}
     <title>{% block title %}Jossie SmartHome - Premium Home Goods{% endblock %}</title>
     
     <!-- Favicon -->
@@ -24,11 +24,10 @@
         rel="stylesheet">
 
     <!-- Iconify -->
-    <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+    <script defer src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
     
-    <!-- Lottie Player - Multiple sources for reliability -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.2/dist/lottie-player.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@2.0.2/dist/lottie-player.js"></script>
+    <!-- Lottie Player -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@2.0.2/dist/lottie-player.js"></script>
     
     <script>
         // Lottie fallback mechanism
@@ -226,6 +225,7 @@
         </div>
     </div>
 
+    {% cache 600 main_navigation %}
     <!-- Main Navigation -->
     <nav class=" bg-white/70 backdrop-blur-lg sticky top-0 z-50 ">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -233,7 +233,7 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="{% url 'home' %}" class="flex-shrink-0 flex items-center group">
-                        <img src="{% static 'images/logo.jpg' %}" alt="Jossie Fancies Logo" 
+                        <img src="{% static 'images/logo.jpg' %}" alt="Jossie Fancies Logo" loading="lazy" decoding="async"
                              class="w-12 h-12 rounded-full mr-3 glow-orange group-hover:hover-glow transition-all duration-300 object-cover">
                         <div>
                             <h1 class="text-2xl font-bold text-gray-800 group-hover:text-orange transition-colors">
@@ -270,7 +270,7 @@
                                 class="absolute bottom-0 left-0 w-0 h-0.5 bg-orange transition-all group-hover:w-full"></span>
                         </button>
                         <div id="categoryDropdown"
-                            class="absolute top-full left-0 mt-2 w-64 bg-orange backdrop-blur-xl rounded-xl py-4 opacity-0 invisible transform scale-95 transition-all duration-300 z-50 shadow-lg border border-gray-200">
+                            class="absolute top-full left-0 mt-2 w-64 bg-white/30 backdrop-blur-md rounded-xl py-4 opacity-0 invisible transform scale-95 transition-all duration-300 z-50 shadow-lg border border-gray-200">
                             <div id="categoryMenu" class="grid grid-cols-1 gap-1">
                                 <!-- Categories will be loaded here -->
                             </div>
@@ -424,6 +424,7 @@
             </div>
         </div>
     </nav>
+    {% endcache %}
 
     <!-- Search Overlay -->
     <div id="searchOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden">
@@ -460,13 +461,14 @@
         {% block content %}{% endblock %}
     </main>
 
+    {% cache 3600 site_footer %}
     <!-- Footer -->
     <footer class="bg-gray-800 mt-20 border-t border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center mb-4">
-                        <img src="{% static 'images/logo.jpg' %}" alt="Jossie Fancies Logo" 
+                        <img src="{% static 'images/logo.jpg' %}" alt="Jossie Fancies Logo" loading="lazy" decoding="async"
                              class="w-10 h-10 rounded-full mr-3 object-cover">
                         <h3 class="text-2xl font-bold text-orange">Jossie SmartHome</h3>
                     </div>
@@ -517,6 +519,7 @@
             </div>
         </div>
     </footer>
+    {% endcache %}
 
     <!-- Cart Sidebar -->
     <div id="cartSidebar"
@@ -729,11 +732,11 @@
                     const safeSlug = encodeURIComponent(category.slug);
                     const iconName = categoryIcons[category.slug.toLowerCase()] || 'material-symbols:home';
 
-                    return `<a href="/category/${safeSlug}/" class="flex items-center px-3 py-2 text-dark hover:text-orange hover:bg-orange/20 rounded-lg transition-all group">
-                        <div class="w-9 h-9 bg-white/80 rounded-md flex items-center justify-center mr-3 transition-all group-hover:bg-orange/15">
-                            <iconify-icon icon="${iconName}" class="text-sm text-dark group-hover:text-orange" style="font-size: 16px;"></iconify-icon>
+                    return `<a href="/category/${safeSlug}/" class="flex items-center px-3 py-2 text-dark hover:text-white hover:bg-primary rounded-lg transition-all group">
+                        <div class="w-9 h-9 bg-white/80 rounded-md flex items-center justify-center mr-3 transition-all group-hover:bg-primary/80">
+                            <iconify-icon icon="${iconName}" class="text-sm text-dark group-hover:text-white" style="font-size: 16px;"></iconify-icon>
                         </div>
-                        <span class="font-medium transition-colors group-hover:text-orange">${safeName}</span>
+                        <span class="font-medium transition-colors group-hover:text-white">${safeName}</span>
                     </a>`;
                 }).filter(html => html !== '').join('');
 
@@ -748,11 +751,11 @@
                     const safeSlug = encodeURIComponent(category.slug);
                     const iconName = categoryIcons[category.slug.toLowerCase()] || 'material-symbols:home';
 
-                    return `<a href="/category/${safeSlug}/" class="flex items-center px-3 py-2 text-dark hover:text-orange hover:bg-orange/20 rounded-lg transition-all font-medium border border-transparent hover:border-orange/30 group">
-                        <div class="w-9 h-9 bg-white/80 rounded-md flex items-center justify-center mr-3 transition-all group-hover:bg-orange/15">
-                            <iconify-icon icon="${iconName}" class="text-base text-dark group-hover:text-orange" style="font-size: 18px;"></iconify-icon>
+                    return `<a href="/category/${safeSlug}/" class="flex items-center px-3 py-2 text-dark hover:text-white hover:bg-primary rounded-lg transition-all font-medium border border-transparent hover:border-primary/70 group">
+                        <div class="w-9 h-9 bg-white/80 rounded-md flex items-center justify-center mr-3 transition-all group-hover:bg-primary/80">
+                            <iconify-icon icon="${iconName}" class="text-base text-dark group-hover:text-white" style="font-size: 18px;"></iconify-icon>
                         </div>
-                        <span class="text-base font-medium transition-colors group-hover:text-orange">${safeName}</span>
+                        <span class="text-base font-medium transition-colors group-hover:text-white">${safeName}</span>
                     </a>`;
                 }).filter(html => html !== '').join('');
 
@@ -873,8 +876,8 @@
                 cartItems.innerHTML = cart.items.map(item => `
                     <div class="glass-card mb-4 p-4 border border-golden/20 rounded-lg hover-glow transition-all">
                         <div class="flex items-center space-x-4">
-                            <img src="${item.product.primary_image?.image || '/static/images/placeholder.svg'}" 
-                                 alt="${item.product.name}" 
+                            <img src="${item.product.primary_image?.optimized_image || item.product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                                 alt="${item.product.name}" loading="lazy" decoding="async"
                                  class="w-16 h-16 object-cover rounded-lg">
                             <div class="flex-1">
                                 <h4 class="font-medium text-golden">${item.product.name}</h4>
@@ -992,8 +995,8 @@
 
                 resultsContainer.innerHTML = products.map(product => `
                     <div class="flex items-center p-3 hover:bg-golden/10 rounded-lg cursor-pointer glass-card border border-golden/20 mb-2 hover-glow transition-all" onclick="window.location.href='/products/?search=${encodeURIComponent(query)}'">
-                        <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
-                             alt="${product.name}" 
+                        <img src="${product.primary_image?.optimized_image || product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                             alt="${product.name}" loading="lazy" decoding="async"
                              class="w-12 h-12 object-cover rounded-lg mr-3">
                         <div class="flex-1">
                             <h4 class="font-medium text-golden">${product.name}</h4>

@@ -143,12 +143,44 @@ STATICFILES_DIRS = [
 
 # Whitenoise settings for serving static files
 # Use simpler storage for better compatibility
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Whitenoise configuration for production
-WHITENOISE_USE_FINDERS = True
+WHITENOISE_USE_FINDERS = DEBUG
 WHITENOISE_AUTOREFRESH = False  # Disable in production for performance
 WHITENOISE_MAX_AGE = 31536000  # 1 year cache
+
+
+def add_custom_cache_headers(headers, path, url):
+    """Ensure long-lived caching headers for hashed static assets."""
+    if url.startswith(STATIC_URL):
+        headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+
+
+WHITENOISE_ADD_HEADERS_FUNCTION = add_custom_cache_headers
+
+# Caching
+REDIS_CACHE_URL = config('REDIS_CACHE_URL', default='')
+
+if REDIS_CACHE_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': REDIS_CACHE_URL,
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+                'IGNORE_EXCEPTIONS': True,
+            },
+            'KEY_PREFIX': 'jossiefancies'
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'jossiefancies-locmem'
+        }
+    }
 
 # Ensure CSS files are served with correct MIME type
 WHITENOISE_MIMETYPES = {

@@ -354,7 +354,7 @@
             };
 
             // Get primary image with fallback
-            const primaryImageSrc = product.primary_image?.image || 
+            const primaryImageSrc = product.primary_image?.optimized_image || product.primary_image?.image || 
                                   (product.images && product.images[0]?.image) || 
                                   '/static/images/placeholder.svg';
 
@@ -373,15 +373,15 @@
                         <div class="mb-4">
                             <img id="quickview-main-image" 
                                  src="${primaryImageSrc}" 
-                                 alt="${escapeHtml(product.name || 'Product image')}" 
+                                 alt="${escapeHtml(product.name || 'Product image')}" loading="lazy" decoding="async"
                                  class="w-full h-80 object-cover rounded-lg"
                                  onerror="this.src='/static/images/placeholder.svg'">
                         </div>
                         ${product.images && product.images.length > 1 ? `
                             <div class="grid grid-cols-4 gap-2">
                                 ${product.images.map((image, index) => `
-                                    <img src="${image.image}" 
-                                         alt="${escapeHtml(image.alt_text || `${product.name} image ${index + 1}`)}" 
+                                    <img src="${image.optimized_image || image.image}" 
+                                         alt="${escapeHtml(image.alt_text || `${product.name} image ${index + 1}`)}" loading="lazy" decoding="async"
                                          class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity border-2 ${image.image === primaryImageSrc ? 'border-orange' : 'border-transparent'}"
                                          onclick="changeMainImage('${image.image}', this)"
                                          onerror="this.style.display='none'">

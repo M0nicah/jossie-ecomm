@@ -231,81 +231,19 @@ class OrderViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
     
     def create(self, request):
-        serializer = OrderCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            # Get cart
-            if request.user.is_authenticated:
-                try:
-                    cart = Cart.objects.get(user=request.user)
-                except Cart.DoesNotExist:
-                    return Response({'error': 'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                session_key = request.session.session_key
-                if not session_key:
-                    return Response({'error': 'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
-                try:
-                    cart = Cart.objects.get(session_key=session_key)
-                except Cart.DoesNotExist:
-                    return Response({'error': 'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
-            
-            if not cart.items.exists():
-                return Response({'error': 'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Check stock availability
-            for item in cart.items.all():
-                if item.product.stock_quantity < item.quantity:
-                    return Response({
-                        'error': f'Insufficient stock for {item.product.name}'
-                    }, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Create order
-            order = serializer.save(
-                user=request.user if request.user.is_authenticated else None,
-                total_amount=cart.total_price
-            )
-            
-            # Create order items and update stock
-            for item in cart.items.all():
-                OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    product_name=item.product.name,
-                    product_price=item.product.price,
-                    quantity=item.quantity
-                )
-                
-                # Update stock and create stock history
-                product = item.product
-                previous_stock = product.stock_quantity
-                product.stock_quantity -= item.quantity
-                product.save()
-                
-                StockHistory.objects.create(
-                    product=product,
-                    transaction_type='sale',
-                    quantity_change=-item.quantity,
-                    previous_stock=previous_stock,
-                    new_stock=product.stock_quantity,
-                    reason=f'Order {order.order_id}',
-                    order=order
-                )
-            
-            # Clear cart
-            cart.items.all().delete()
-            
-            # Generate WhatsApp URL for customer
-            whatsapp_url = WhatsAppService.generate_whatsapp_url(order)
-            
-            # Process order (send emails, notifications)
-            OrderService.process_new_order(order)
-            
-            response_data = OrderSerializer(order).data
-            response_data['whatsapp_url'] = whatsapp_url
-            response_data['whatsapp_number'] = settings.WHATSAPP_BUSINESS_NUMBER
-            
-            return Response(response_data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = OrderCreateSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+
+        order = serializer.save()
+
+        whatsapp_url = WhatsAppService.generate_whatsapp_url(order)
+        OrderService.process_new_order(order)
+
+        response_data = OrderSerializer(order).data
+        response_data['whatsapp_url'] = whatsapp_url
+        response_data['whatsapp_number'] = settings.WHATSAPP_BUSINESS_NUMBER
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
     
     @action(detail=True, methods=['patch'])
     def update_status(self, request, pk=None):

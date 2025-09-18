@@ -326,8 +326,8 @@
         grid.innerHTML = currentProducts.map(product => `
             <div class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-primary/20">
                 <div class="relative overflow-hidden bg-gray-50">
-                    <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
-                         alt="${product.name}" 
+                    <img src="${product.primary_image?.optimized_image || product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                         alt="${product.name}" loading="lazy" decoding="async"
                          class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500 cursor-pointer"
                          onclick="openQuickView(${product.id})">
                     
@@ -473,15 +473,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <div class="mb-4">
-                            <img src="${product.primary_image?.image || '/static/images/placeholder.svg'}" 
-                                 alt="${product.name}" 
+                            <img src="${product.primary_image?.optimized_image || product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                                 alt="${product.name}" loading="lazy" decoding="async"
                                  class="w-full h-80 object-cover rounded-lg">
                         </div>
                         ${product.images && product.images.length > 1 ? `
                             <div class="grid grid-cols-4 gap-2">
                                 ${product.images.map(image => `
-                                    <img src="${image.image}" 
-                                         alt="${image.alt_text}" 
+                                    <img src="${image.optimized_image || image.image}" 
+                                         alt="${image.alt_text}" loading="lazy" decoding="async"
                                          class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity"
                                          onclick="changeMainImage('${image.image}')">
                                 `).join('')}

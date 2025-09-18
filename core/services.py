@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.db import transaction, close_old_connections
 import urllib.parse
 from typing import Dict, Any
 
@@ -150,16 +151,7 @@ class OrderService:
     def process_new_order(order):
         """Process a newly created order"""
         try:
-            # Send customer confirmation
-            EmailService.send_order_confirmation(order)
-            
-            # Send admin notification
-            EmailService.send_admin_notification(order)
-            
-            # Mark WhatsApp as sent (this would be handled by the view)
-            order.whatsapp_sent = True
-            order.save(update_fields=['whatsapp_sent'])
-            
+            transaction.on_commit(lambda: _send_order_notifications(order.id))
             return True
         except Exception as e:
             print(f"Error processing new order: {e}")
@@ -258,3 +250,22 @@ class InventoryService:
             'out_of_stock_count': out_of_stock,
             'total_alerts': low_stock + out_of_stock
         }
+
+
+def _send_order_notifications(order_id: int) -> None:
+    """Background worker for sending order notifications."""
+    from .models import Order  # Local import to avoid circular dependency
+
+    close_old_connections()
+
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return
+
+    customer_sent = EmailService.send_order_confirmation(order)
+    admin_sent = EmailService.send_admin_notification(order)
+
+    if customer_sent and admin_sent and not order.whatsapp_sent:
+        order.whatsapp_sent = True
+        order.save(update_fields=['whatsapp_sent'])
