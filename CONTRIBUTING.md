@@ -241,7 +241,7 @@ Any other relevant information
 - Follow **Jossie Fancies brand guidelines**
 
 ### Color Palette
-- **Primary Orange**: #FF9A00
+- **Primary Gold**: #A67C00
 - **Primary Dark**: #e6870a
 - **Success Green**: #059669
 - **Dark Variants**: #181d24, #1f252d, #2a3038

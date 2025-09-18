@@ -8,13 +8,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#FF9A00',
-        'primary-dark': '#e6870a',
+        primary: '#A67C00',
+        'primary-dark': '#805d00',
         success: '#059669',
         dark: '#181d24',
         'dark-light': '#1f252d',
         'dark-lighter': '#2a3038',
-        orange: '#FF9A00'
+        orange: '#A67C00'
       },
       fontFamily: {
         'lato': ['Lato', 'sans-serif'],
@@ -45,8 +45,8 @@ module.exports = {
         }
       },
       boxShadow: {
-        'glow': '0 0 20px rgba(255, 154, 0, 0.3)',
-        'glow-lg': '0 0 30px rgba(255, 154, 0, 0.4)',
+        'glow': '0 0 20px rgba(166, 124, 0, 0.3)',
+        'glow-lg': '0 0 30px rgba(166, 124, 0, 0.4)',
         'modern': '0 4px 20px rgba(0, 0, 0, 0.08)',
         'modern-lg': '0 8px 30px rgba(0, 0, 0, 0.12)',
       },
