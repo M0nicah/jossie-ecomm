@@ -239,10 +239,16 @@ if USE_CLOUDINARY_STORAGE:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     MEDIA_URL = config('MEDIA_URL', default='/media/')
     MEDIA_ROOT = ''
+
+    print(
+        "Cloudinary storage enabled. cloud_name=%s" % cloudinary.config().cloud_name
+    )
 else:
     # Local media files for development or when Cloudinary is not configured
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
+
+    print("Cloudinary storage disabled. Serving media from local MEDIA_ROOT %s" % MEDIA_ROOT)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
