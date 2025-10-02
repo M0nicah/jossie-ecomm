@@ -19,14 +19,7 @@ services:
         fromDatabase:
           name: jossiefancies-db
           property: connectionString
-      - key: CLOUDINARY_URL
-        value: "CLOUDINARY_URL=cloudinary://551897233128257:SzFwJxXuNf0Hit5X1wCV5d78Ri8@doclk6ldl"
-      - key: CLOUDINARY_CLOUD_NAME
-        value: "jossie"
-      - key: CLOUDINARY_API_KEY
-        value: "551897233128257"
-      - key: CLOUDINARY_API_SECRET
-        value: "SzFwJxXuNf0Hit5X1wCV5d78Ri8"
+
 
 databases:
   - name: jossiefancies-db
