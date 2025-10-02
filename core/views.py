@@ -40,7 +40,8 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             products = products.order_by('name')
         
-        serializer = ProductListSerializer(products, many=True)
+        serializer_context = self.get_serializer_context()
+        serializer = ProductListSerializer(products, many=True, context=serializer_context)
         return Response(serializer.data)
 
 
@@ -104,7 +105,8 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
             is_featured=True
         ).order_by('-created_at')[:limit]
         
-        serializer = ProductListSerializer(featured_products, many=True)
+        serializer_context = self.get_serializer_context()
+        serializer = ProductListSerializer(featured_products, many=True, context=serializer_context)
         return Response(serializer.data)
 
 
@@ -173,7 +175,7 @@ class CartViewSet(viewsets.ModelViewSet):
             cart_item.quantity = new_quantity
             cart_item.save()
         
-        serializer = CartItemSerializer(cart_item)
+        serializer = CartItemSerializer(cart_item, context=self.get_serializer_context())
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     @action(detail=False, methods=['put'])
@@ -197,7 +199,7 @@ class CartViewSet(viewsets.ModelViewSet):
         cart_item.quantity = quantity
         cart_item.save()
         
-        serializer = CartItemSerializer(cart_item)
+        serializer = CartItemSerializer(cart_item, context=self.get_serializer_context())
         return Response(serializer.data)
     
     @action(detail=False, methods=['delete'])
