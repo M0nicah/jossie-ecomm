@@ -1,6 +1,6 @@
 {
   "name": "jossie-fancies",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Django e-commerce site for Jossie Fancies",
   "main": "index.js",
   "scripts": {
