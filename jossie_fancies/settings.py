@@ -43,9 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'cloudinary_storage',
+    'cloudinary',
     'core',
-    
-
 ]
 
 MIDDLEWARE = [
@@ -205,8 +205,26 @@ if not DEBUG:
     logger.info(f"STATICFILES_DIRS: {STATICFILES_DIRS}")
 
 # Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+if not DEBUG:
+    # Use Cloudinary for media files in production
+    import cloudinary
+    import cloudinary.uploader
+    import cloudinary.api
+    
+    cloudinary.config(
+        cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
+        api_key=config('CLOUDINARY_API_KEY', default=''),
+        api_secret=config('CLOUDINARY_API_SECRET', default=''),
+        secure=True
+    )
+    
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = ''
+else:
+    # Local media files for development
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

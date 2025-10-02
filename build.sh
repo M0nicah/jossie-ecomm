@@ -9,6 +9,10 @@ echo "Starting build process..."
 echo "Installing Python dependencies..."
 pip install -r requirements.txt
 
+# Verify Cloudinary installation
+echo "Verifying Cloudinary installation..."
+python -c "import cloudinary; print('✅ Cloudinary installed successfully')"
+
 # Install Node.js dependencies and build CSS
 echo "Installing Node.js dependencies..."
 npm install
