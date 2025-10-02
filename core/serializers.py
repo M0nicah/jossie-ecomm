@@ -1,29 +1,61 @@
 from decimal import Decimal
 from rest_framework import serializers
 from django.db import transaction
+from urllib.parse import urlparse
+
 from .models import Category, Product, ProductImage, Cart, CartItem, Order, OrderItem, StockHistory
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class AbsoluteURLMixin:
+    """Provide helper to convert relative media URLs into absolute ones."""
+
+    def _absolute_url(self, url):
+        if not url:
+            return None
+
+        parsed = urlparse(url)
+        if parsed.scheme and parsed.netloc:
+            return url
+
+        request = self.context.get('request') if hasattr(self, 'context') else None
+        if request:
+            return request.build_absolute_uri(url)
+        return url
+
+
+class CategorySerializer(AbsoluteURLMixin, serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name', 'slug', 'description', 'image', 'is_active']
 
 
-class ProductImageSerializer(serializers.ModelSerializer):
+class ProductImageSerializer(AbsoluteURLMixin, serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    optimized_image = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductImage
         fields = ['id', 'image', 'optimized_image', 'alt_text', 'is_primary', 'order']
 
+    def get_image(self, obj):
+        if not obj.image:
+            return None
+        return self._absolute_url(obj.image.url)
 
-class ProductSerializer(serializers.ModelSerializer):
+    def get_optimized_image(self, obj):
+        if not obj.optimized_image:
+            return None
+        return self._absolute_url(obj.optimized_image.url)
+
+
+class ProductSerializer(AbsoluteURLMixin, serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     primary_image = ProductImageSerializer(read_only=True)
     stock_status = serializers.CharField(read_only=True)
     has_discount = serializers.BooleanField(read_only=True)
     discount_percentage = serializers.IntegerField(read_only=True)
-    primary_image_url = serializers.CharField(read_only=True)
+    primary_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -35,14 +67,17 @@ class ProductSerializer(serializers.ModelSerializer):
             'primary_image', 'primary_image_url', 'stock_status', 'has_discount', 'discount_percentage'
         ]
 
+    def get_primary_image_url(self, obj):
+        return self._absolute_url(obj.primary_image_url)
 
-class ProductListSerializer(serializers.ModelSerializer):
+
+class ProductListSerializer(AbsoluteURLMixin, serializers.ModelSerializer):
     primary_image = ProductImageSerializer(read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     stock_status = serializers.CharField(read_only=True)
     has_discount = serializers.BooleanField(read_only=True)
     discount_percentage = serializers.IntegerField(read_only=True)
-    primary_image_url = serializers.CharField(read_only=True)
+    primary_image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -51,6 +86,9 @@ class ProductListSerializer(serializers.ModelSerializer):
             'category_name', 'stock_quantity', 'is_featured', 'primary_image', 'primary_image_url',
             'stock_status', 'has_discount', 'discount_percentage'
         ]
+
+    def get_primary_image_url(self, obj):
+        return self._absolute_url(obj.primary_image_url)
 
 
 class CartItemSerializer(serializers.ModelSerializer):
