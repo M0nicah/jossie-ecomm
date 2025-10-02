@@ -4,7 +4,7 @@ services:
     env: python
     buildCommand: "./build.sh"
     startCommand: "gunicorn jossie_fancies.wsgi:application"
-    postDeployCommand: "python manage.py create_default_superuser"
+    postDeployCommand: "python manage.py create_default_superuser && python manage.py check_cloudinary_config"
     plan: free
     envVars:
       - key: DEBUG
