@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404, render
 from django.db.models import Q
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_protect
 from .models import Category, Product, ProductImage, Cart, CartItem, Order, OrderItem, StockHistory
 from .serializers import (
     CategorySerializer, ProductSerializer, ProductListSerializer,
@@ -11,6 +14,10 @@ from .serializers import (
     StockHistorySerializer
 )
 from .services import WhatsAppService, EmailService, OrderService
+from .decorators import (
+    admin_required, secure_admin_view, standard_admin_view, 
+    rate_limit_admin, audit_log_admin
+)
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -348,8 +355,15 @@ def faq(request):
 def contact(request):
     return render(request, 'core/contact.html')
 
+@require_http_methods(["GET", "POST"])
+@csrf_protect
+@rate_limit_admin(max_attempts=5, window_minutes=15)
+@audit_log_admin(action="admin_login_page_access", sensitive=True)
 def admin_login(request):
+    """Secure admin login page with rate limiting and audit logging"""
     return render(request, 'core/admin_login.html')
 
+@standard_admin_view
 def admin_dashboard(request):
+    """Secure admin dashboard with comprehensive security protection"""
     return render(request, 'core/admin_dashboard.html')
