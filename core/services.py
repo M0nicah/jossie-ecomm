@@ -263,9 +263,11 @@ def _send_order_notifications(order_id: int) -> None:
     except Order.DoesNotExist:
         return
 
-    customer_sent = EmailService.send_order_confirmation(order)
-    admin_sent = EmailService.send_admin_notification(order)
-
-    if customer_sent and admin_sent and not order.whatsapp_sent:
+    # Email functionality disabled - only WhatsApp notifications
+    # customer_sent = EmailService.send_order_confirmation(order)
+    # admin_sent = EmailService.send_admin_notification(order)
+    
+    # Mark WhatsApp as sent since that's the primary notification method
+    if not order.whatsapp_sent:
         order.whatsapp_sent = True
         order.save(update_fields=['whatsapp_sent'])

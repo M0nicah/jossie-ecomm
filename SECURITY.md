@@ -209,7 +209,7 @@ content.innerHTML = `<h3>${escapeHtml(product.name)}</h3>`;
 SECRET_KEY=your-super-secret-key-here
 DEBUG=False
 DATABASE_URL=postgresql://user:pass@host:port/db
-WHATSAPP_BUSINESS_NUMBER=+254794748719
+WHATSAPP_BUSINESS_NUMBER=+254797808786
 EMAIL_HOST_PASSWORD=your-app-password
 ```
 

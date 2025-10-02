@@ -224,11 +224,19 @@ WHATSAPP_BUSINESS_NUMBER = config('WHATSAPP_BUSINESS_NUMBER', default='+25479042
 WHATSAPP_BUSINESS_NAME = config('WHATSAPP_BUSINESS_NAME', default='Jossie Fancies')
 
 # Email settings (for order notifications)
-# Use SMTP backend for production to actually send emails
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+# Use console backend for development, SMTP for production
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+    EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+    EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+    # Fix SSL certificate verification issues
+    EMAIL_USE_SSL = False
+    EMAIL_SSL_CERTFILE = None
+    EMAIL_SSL_KEYFILE = None
+
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='jossiefancies1@gmail.com')

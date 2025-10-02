@@ -5,8 +5,8 @@
 {% block content %}
 <!-- Page Header -->
 <section class="relative py-16 overflow-hidden" style="background: url('https://images.unsplash.com/photo-1634973357973-f2ed2657db3c?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8b25saW5lJTIwc2hvcHxlbnwwfDB8MHx8fDA%3D') center/cover;">
-    <!-- Black Overlay -->
-    <div class="absolute inset-0 bg-black/60"></div>
+    <!-- Brand Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-r from-primary-dark/90 via-black/70 to-primary/80"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center  p-8 rounded-2xl border border-orange/30 bg-white/10 backdrop-blur-sm max-w-3xl mx-auto">
@@ -18,7 +18,7 @@
 </section>
 
 <!-- Search and Filters -->
-<section class="bg-white/50 backdrop-blur-sm border-b border-gray-200 sticky top-[70px] z-40">
+<section class="bg-white/80 backdrop-blur-md border-b border-orange/20 shadow-sm sticky top-[70px] z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <form method="get" id="filterForm" class="w-full">
             <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
@@ -26,9 +26,9 @@
                 <div class="flex-1 max-w-full lg:max-w-md order-1 lg:order-1">
                     <div class="relative">
                         <input type="text" name="search" id="searchInput" placeholder="Search products..." value="{{ current_filters.search|default:'' }}"
-                            class="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange focus:border-orange focus:outline-none text-gray-800 placeholder-gray-500">
+                            class="w-full pl-10 pr-4 py-3 bg-white/90 border border-orange/30 rounded-xl focus:ring-2 focus:ring-orange focus:border-orange focus:outline-none text-dark placeholder-gray-500 shadow-sm">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-5 w-5 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -41,14 +41,14 @@
                     <!-- Category Filter -->
                     <div class="relative min-w-0 flex-shrink-0">
                         <select name="category" id="categoryFilter"
-                            class="appearance-none border border-orange-300 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-orange focus:border-orange focus:outline-none text-gray-800 w-full sm:w-auto min-w-[160px]">
+                            class="appearance-none bg-white/90 border border-orange/30 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-orange focus:border-orange focus:outline-none text-dark w-full sm:w-auto min-w-[160px] shadow-sm">
                             <option value="" class="text-gray-800">All Categories</option>
                             {% for category in categories %}
                                 <option value="{{ category.id }}" {% if current_filters.category == category.id|stringformat:"s" %}selected{% endif %} class="text-gray-800">{{ category.name }}</option>
                             {% endfor %}
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-4 w-4 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                                 </path>
                             </svg>
@@ -58,14 +58,14 @@
                     <!-- Sort Filter -->
                     <div class="relative min-w-0 flex-shrink-0">
                         <select name="sort" id="sortFilter"
-                            class="appearance-none bg-white border border-gray-300 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-orange focus:border-orange focus:outline-none text-gray-800 w-full sm:w-auto min-w-[160px]">
+                            class="appearance-none bg-white/90 border border-orange/30 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-orange focus:border-orange focus:outline-none text-gray-800 w-full sm:w-auto min-w-[160px] shadow-sm">
                             <option value="-created_at" {% if current_filters.sort == "-created_at" %}selected{% endif %} class="bg-white text-gray-800">Newest First</option>
                             <option value="name" {% if current_filters.sort == "name" %}selected{% endif %} class="bg-white text-gray-800">Name A-Z</option>
                             <option value="price_low" {% if current_filters.sort == "price_low" %}selected{% endif %} class="bg-white text-gray-800">Price: Low to High</option>
                             <option value="price_high" {% if current_filters.sort == "price_high" %}selected{% endif %} class="bg-white text-gray-800">Price: High to Low</option>
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                            <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-4 w-4 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                                 </path>
                             </svg>
@@ -73,15 +73,15 @@
                     </div>
 
                     <!-- Featured Filter -->
-                    <label class="flex items-center space-x-2 cursor-pointer px-4 py-3 rounded-xl border border-gray-200 hover:border-orange/30 transition-all whitespace-nowrap">
+                    <label class="flex items-center space-x-2 cursor-pointer px-4 py-3 rounded-xl border border-orange/20 bg-white/80 hover:border-orange/40 transition-all whitespace-nowrap shadow-sm">
                         <input type="checkbox" name="featured" value="true" id="featuredFilter" {% if current_filters.featured == "true" %}checked{% endif %}
-                            class="rounded border-gray-300 text-orange focus:ring-orange bg-white flex-shrink-0">
-                        <span class="text-gray-800 text-sm">Featured Only</span>
+                            class="rounded border-orange/40 text-orange focus:ring-orange bg-white flex-shrink-0">
+                        <span class="text-dark text-sm">Featured Only</span>
                     </label>
 
                     <!-- Clear Filters -->
                     <a href="{% url 'products' %}"
-                        class="px-4 py-3 text-gray-600 hover:text-orange transition-colors rounded-xl text-center whitespace-nowrap text-sm">
+                        class="px-4 py-3 text-dark hover:text-orange transition-colors rounded-xl text-center whitespace-nowrap text-sm">
                         Clear Filters
                     </a>
                 </div>
@@ -108,7 +108,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <!-- Results Info -->
         {% if products %}
-            <div class="mb-6 text-gray-600">
+            <div class="mb-6 text-dark/70">
                 Showing {{ products|length }} of {{ total_products }} products
                 {% if products.has_previous or products.has_next %}
                     (Page {{ products.number }} of {{ products.paginator.num_pages }})
@@ -120,7 +120,7 @@
         {% if products %}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {% for product in products %}
-                    <div class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 hover:border-orange/20">
+                    <div class="group bg-white rounded-xl shadow-sm hover:shadow-glow transition-all duration-300 overflow-hidden border border-orange/15 hover:border-orange/40">
                         <div class="relative overflow-hidden bg-gray-50">
                             <img src="{% if product.primary_image %}{{ product.primary_image.image.url }}{% else %}/static/images/placeholder.svg{% endif %}" 
                                  alt="{{ product.name }}" 
@@ -151,7 +151,7 @@
                                 
                                 <h3 class="font-bold text-gray-800 mb-2 text-sm leading-tight group-hover:text-orange transition-colors cursor-pointer line-clamp-2" onclick="openQuickView({{ product.id }})">{{ product.name }}</h3>
                                 
-                                <p class="text-gray-600 text-xs mb-3 line-clamp-2 leading-relaxed">{{ product.short_description }}</p>
+                                <p class="text-dark/70 text-xs mb-3 line-clamp-2 leading-relaxed">{{ product.short_description }}</p>
                             </div>
                             
                             <div class="mt-auto space-y-3">
@@ -165,7 +165,7 @@
                                     </button>
 
                                     <button onclick="openQuickView({{ product.id }})" 
-                                            class="flex-shrink-0 text-gray-500 hover:text-orange transition-colors p-2 rounded-lg hover:bg-gray-50"
+                                            class="flex-shrink-0 text-dark/60 hover:text-orange transition-colors p-2 rounded-lg hover:bg-orange/10"
                                             title="Quick View">
                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -181,13 +181,13 @@
         {% else %}
             <!-- No Results -->
             <div class="text-center py-12">
-                <div class="p-8 rounded-2xl border border-gray-200 max-w-md mx-auto">
+                <div class="p-8 rounded-2xl border border-orange/20 bg-white/80 max-w-md mx-auto shadow-sm">
                     <iframe src="https://lottie.host/embed/234d9eef-555d-467a-906a-25b15556944f/TLxZDiIxxm.lottie"
                         style="width: 120px; height: 120px; border: none; margin: 0 auto; display: block;"
                         frameborder="0">
                     </iframe>
                     <h3 class="text-xl font-semibold text-gray-800 mb-2">No products found</h3>
-                    <p class="text-gray-600 mb-4">We couldn't find any products matching your search. Try adjusting your filters or search terms.</p>
+                    <p class="text-dark/70 mb-4">We couldn't find any products matching your search. Try adjusting your filters or search terms.</p>
                     <a href="{% url 'products' %}"
                         class="bg-gradient-to-r from-orange to-primary-dark text-white px-6 py-3 rounded-xl hover-glow transition-all font-semibold transform hover:scale-105">
                         Clear Filters
@@ -203,7 +203,7 @@
                 <nav class="flex items-center space-x-2">
                     {% if products.has_previous %}
                         <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.featured %}featured={{ request.GET.featured }}&{% endif %}page={{ products.previous_page_number }}"
-                           class="px-3 py-2 text-gray-500 hover:text-orange border border-gray-300 rounded-lg hover:border-orange/30 transition-all">
+                           class="px-3 py-2 text-dark/70 hover:text-orange border border-orange/30 rounded-lg hover:border-orange/50 transition-all bg-white/80">
                             Previous
                         </a>
                     {% endif %}
@@ -213,7 +213,7 @@
                             <span class="px-3 py-2 bg-orange text-white rounded-lg font-semibold">{{ num }}</span>
                         {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
                             <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.featured %}featured={{ request.GET.featured }}&{% endif %}page={{ num }}"
-                               class="px-3 py-2 text-gray-500 hover:text-orange border border-gray-300 rounded-lg hover:border-orange/30 transition-all">
+                               class="px-3 py-2 text-dark/70 hover:text-orange border border-orange/30 rounded-lg hover:border-orange/50 transition-all bg-white/80">
                                 {{ num }}
                             </a>
                         {% endif %}
@@ -221,7 +221,7 @@
                     
                     {% if products.has_next %}
                         <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}{% if request.GET.featured %}featured={{ request.GET.featured }}&{% endif %}page={{ products.next_page_number }}"
-                           class="px-3 py-2 text-gray-500 hover:text-orange border border-gray-300 rounded-lg hover:border-orange/30 transition-all">
+                           class="px-3 py-2 text-dark/70 hover:text-orange border border-orange/30 rounded-lg hover:border-orange/50 transition-all bg-white/80">
                             Next
                         </a>
                     {% endif %}
@@ -234,7 +234,7 @@
 <!-- Product Quick View Modal -->
 <div id="quickViewModal"
     class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-    <div class=" rounded-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200">
+    <div class=" rounded-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-orange/30 bg-white/95">
         <div id="quickViewContent" class="p-6">
             <!-- Quick view content will be loaded here -->
         </div>
@@ -361,7 +361,7 @@
             content.innerHTML = `
                 <div class="flex justify-between items-start mb-6">
                     <h2 class="text-2xl font-bold text-gray-800">${escapeHtml(product.name || 'Product')}</h2>
-                    <button onclick="closeQuickView()" class="text-gray-600 hover:text-orange p-2 rounded-lg transition-all" aria-label="Close quick view">
+                    <button onclick="closeQuickView()" class="text-dark/60 hover:text-orange p-2 rounded-lg transition-all" aria-label="Close quick view">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -408,14 +408,14 @@
                         </div>
                         
                         <div class="mb-6">
-                            <p class="text-gray-600 leading-relaxed">${escapeHtml(product.description || 'No description available')}</p>
+                            <p class="text-dark/70 leading-relaxed">${escapeHtml(product.description || 'No description available')}</p>
                         </div>
                         
                         ${product.weight || product.dimensions ? `
-                            <div class="mb-6 p-4 rounded-lg border border-gray-200">
+                            <div class="mb-6 p-4 rounded-lg border border-orange/20 bg-white/80">
                                 <h4 class="font-semibold mb-2 text-gray-800">Product Details</h4>
-                                ${product.weight ? `<p class="text-sm text-gray-600 mb-1">Weight: ${product.weight} kg</p>` : ''}
-                                ${product.dimensions ? `<p class="text-sm text-gray-600">Dimensions: ${escapeHtml(product.dimensions)}</p>` : ''}
+                                ${product.weight ? `<p class="text-sm text-dark/70 mb-1">Weight: ${product.weight} kg</p>` : ''}
+                                ${product.dimensions ? `<p class="text-sm text-dark/70">Dimensions: ${escapeHtml(product.dimensions)}</p>` : ''}
                             </div>
                         ` : ''}
                         
@@ -428,7 +428,7 @@
                             </button>
                         </div>
                         
-                        <div class="text-sm text-gray-500">
+                        <div class="text-sm text-dark/60">
                             <p>SKU: ${escapeHtml(product.sku || 'N/A')}</p>
                             <p>Stock: ${product.stock_quantity || 0} available</p>
                         </div>
@@ -441,14 +441,14 @@
             content.innerHTML = `
                 <div class="flex justify-between items-start mb-6">
                     <h2 class="text-xl font-bold text-red-600">Error Loading Product</h2>
-                    <button onclick="closeQuickView()" class="text-gray-600 hover:text-orange p-2 rounded-lg transition-all">
+                    <button onclick="closeQuickView()" class="text-dark/60 hover:text-orange p-2 rounded-lg transition-all">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
                 <div class="text-center py-8">
-                    <p class="text-gray-600">Unable to load product details. Please try again.</p>
+                    <p class="text-dark/70">Unable to load product details. Please try again.</p>
                     <button onclick="openQuickView(${productId})" class="mt-4 bg-orange text-white px-4 py-2 rounded hover:bg-orange-600 transition-colors">
                         Retry
                     </button>
