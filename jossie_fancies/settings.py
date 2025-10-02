@@ -142,13 +142,18 @@ STATICFILES_DIRS = [
 ]
 
 # Whitenoise settings for serving static files
-# Use simpler storage for better compatibility
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if DEBUG:
+    # Development: Use simpler storage
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+else:
+    # Production: Use manifest storage for better caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Whitenoise configuration for production
+# Whitenoise configuration
 WHITENOISE_USE_FINDERS = DEBUG
-WHITENOISE_AUTOREFRESH = False  # Disable in production for performance
+WHITENOISE_AUTOREFRESH = DEBUG  # Only auto-refresh in development
 WHITENOISE_MAX_AGE = 31536000  # 1 year cache
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'zip', 'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br']
 
 
 def add_custom_cache_headers(headers, path, url):
@@ -186,6 +191,18 @@ else:
 WHITENOISE_MIMETYPES = {
     '.css': 'text/css',
 }
+
+# Additional static file configurations for production
+if not DEBUG:
+    # Production-specific settings
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    
+    # Ensure static files are served correctly
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"STATIC_ROOT: {STATIC_ROOT}")
+    logger.info(f"STATIC_URL: {STATIC_URL}")
+    logger.info(f"STATICFILES_DIRS: {STATICFILES_DIRS}")
 
 # Media files
 MEDIA_URL = '/media/'
