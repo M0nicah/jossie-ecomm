@@ -205,24 +205,42 @@ if not DEBUG:
     logger.info(f"STATICFILES_DIRS: {STATICFILES_DIRS}")
 
 # Media files
-if not DEBUG:
-    # Use Cloudinary for media files in production
+CLOUDINARY_URL = config('CLOUDINARY_URL', default='')
+CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME', default='')
+CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY', default='')
+CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET', default='')
+
+USE_CLOUDINARY_STORAGE = bool(
+    CLOUDINARY_URL or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+)
+
+if USE_CLOUDINARY_STORAGE:
+    # Configure Cloudinary only when credentials are present
     import cloudinary
     import cloudinary.uploader
     import cloudinary.api
-    
-    cloudinary.config(
-        cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
-        api_key=config('CLOUDINARY_API_KEY', default=''),
-        api_secret=config('CLOUDINARY_API_SECRET', default=''),
-        secure=True
-    )
-    
+
+    if CLOUDINARY_URL:
+        cloudinary.config(cloudinary_url=CLOUDINARY_URL)
+    else:
+        cloudinary.config(
+            cloud_name=CLOUDINARY_CLOUD_NAME,
+            api_key=CLOUDINARY_API_KEY,
+            api_secret=CLOUDINARY_API_SECRET,
+            secure=True
+        )
+
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': cloudinary.config().cloud_name,
+        'API_KEY': cloudinary.config().api_key,
+        'API_SECRET': cloudinary.config().api_secret,
+    }
+
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    MEDIA_URL = '/media/'
+    MEDIA_URL = config('MEDIA_URL', default='/media/')
     MEDIA_ROOT = ''
 else:
-    # Local media files for development
+    # Local media files for development or when Cloudinary is not configured
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 
