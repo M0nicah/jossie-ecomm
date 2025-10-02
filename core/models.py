@@ -3,17 +3,31 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from django.core.files.base import ContentFile
+from django.conf import settings
 from io import BytesIO
 from pathlib import Path
 from PIL import Image
 import uuid
+
+from cloudinary_storage.storage import MediaCloudinaryStorage
+
+
+def _cloudinary_storage_or_default():
+    if getattr(settings, 'USE_CLOUDINARY_STORAGE', False):
+        return MediaCloudinaryStorage()
+    return None
 
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True)
     description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    image = models.ImageField(
+        upload_to='categories/',
+        storage=_cloudinary_storage_or_default(),
+        blank=True,
+        null=True
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -94,12 +108,21 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image = models.ImageField(upload_to='products/')
+    image = models.ImageField(
+        upload_to='products/',
+        storage=_cloudinary_storage_or_default()
+    )
     alt_text = models.CharField(max_length=255, blank=True)
     is_primary = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    optimized_image = models.ImageField(upload_to='products/optimized/', blank=True, null=True, editable=False)
+    optimized_image = models.ImageField(
+        upload_to='products/optimized/',
+        storage=_cloudinary_storage_or_default(),
+        blank=True,
+        null=True,
+        editable=False
+    )
 
     class Meta:
         ordering = ['order', 'created_at']
