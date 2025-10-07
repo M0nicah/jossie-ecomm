@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.db import transaction, close_old_connections
+from django.db import transaction, close_old_connections, connection
 import urllib.parse
 from typing import Dict, Any
 
@@ -151,7 +151,11 @@ class OrderService:
     def process_new_order(order):
         """Process a newly created order"""
         try:
-            transaction.on_commit(lambda: _send_order_notifications(order.id))
+            # Ensure notification runs immediately so state is reflected in current transaction
+            _send_order_notifications(order.id)
+
+            if connection.in_atomic_block:
+                transaction.on_commit(lambda: _send_order_notifications(order.id))
             return True
         except Exception as e:
             print(f"Error processing new order: {e}")

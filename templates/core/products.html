@@ -244,6 +244,9 @@
 
 {% block extra_js %}
 <script>
+    let quickViewProduct = null;
+    let quickViewQuantity = 1;
+
     // Initialize
     document.addEventListener('DOMContentLoaded', function () {
         setupEventListeners();
@@ -340,6 +343,15 @@
                 throw new Error('Product not found');
             }
 
+            quickViewProduct = product;
+            quickViewQuantity = 1;
+            const isOutOfStock = product.stock_status === 'out_of_stock';
+            const parsedStockQuantity = parseInt(product.stock_quantity, 10);
+            const maxQuantityValue = Number.isFinite(parsedStockQuantity) && parsedStockQuantity > 0 ? parsedStockQuantity : null;
+            if (maxQuantityValue && quickViewQuantity > maxQuantityValue) {
+                quickViewQuantity = maxQuantityValue;
+            }
+
             // Helper function to safely format price
             const formatPrice = (price) => {
                 const numPrice = parseFloat(price) || 0;
@@ -418,9 +430,18 @@
                                 ${product.dimensions ? `<p class="text-sm text-dark/70">Dimensions: ${escapeHtml(product.dimensions)}</p>` : ''}
                             </div>
                         ` : ''}
-                        
+
+                        <div class="mb-6">
+                            <span class="block text-sm font-medium text-gray-700 mb-2">Quantity</span>
+                            <div class="inline-flex items-center border border-orange/30 rounded-lg overflow-hidden bg-white/90 ${isOutOfStock ? 'opacity-60 cursor-not-allowed' : ''}" ${isOutOfStock ? 'aria-disabled="true"' : ''}>
+                                <button type="button" onclick="decreaseQuickViewQuantity()" class="px-3 py-2 hover:bg-orange/10 transition-colors ${isOutOfStock ? 'cursor-not-allowed opacity-50' : ''}" ${isOutOfStock ? 'disabled' : ''}>-</button>
+                                <input type="number" id="quickViewQuantity" name="quickViewQuantity" min="1" value="${quickViewQuantity}" class="w-16 text-center border-0 focus:ring-0 py-2" ${isOutOfStock ? 'disabled' : ''} ${maxQuantityValue ? 'max="' + maxQuantityValue + '"' : ''}>
+                                <button type="button" onclick="increaseQuickViewQuantity()" class="px-3 py-2 hover:bg-orange/10 transition-colors ${isOutOfStock ? 'cursor-not-allowed opacity-50' : ''}" ${isOutOfStock ? 'disabled' : ''}>+</button>
+                            </div>
+                        </div>
+
                         <div class="flex space-x-4 mb-4">
-                            <button onclick="addToCart(${product.id}); closeQuickView();" 
+                            <button onclick="quickViewAddToCart(${product.id})" 
                                     class="flex-1 bg-gradient-to-r from-orange to-primary-dark text-white py-3 px-6 rounded-xl hover-glow transition-all font-bold ${product.stock_status === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''}"
                                     ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}
                                     aria-label="Add ${escapeHtml(product.name)} to cart">
@@ -435,6 +456,15 @@
                     </div>
                 </div>
             `;
+
+            if (!isOutOfStock) {
+                const quantityInput = document.getElementById('quickViewQuantity');
+                if (quantityInput) {
+                    quantityInput.addEventListener('change', handleQuickViewQuantityChange);
+                    quantityInput.addEventListener('input', handleQuickViewQuantityChange);
+                }
+            }
+            updateQuickViewQuantityDisplay();
 
         } catch (error) {
             console.error('Error loading product details:', error);
@@ -461,8 +491,13 @@
     }
 
     function closeQuickView() {
-        document.getElementById('quickViewModal').classList.add('hidden');
+        const quickViewModal = document.getElementById('quickViewModal');
+        if (quickViewModal) {
+            quickViewModal.classList.add('hidden');
+        }
         document.body.style.overflow = 'auto';
+        quickViewProduct = null;
+        quickViewQuantity = 1;
     }
 
     function changeMainImage(imageUrl, clickedThumbnail) {
@@ -480,6 +515,68 @@
                 clickedThumbnail.classList.remove('border-transparent');
                 clickedThumbnail.classList.add('border-orange');
             }
+        }
+    }
+
+    function getQuickViewMaxQuantity() {
+        if (!quickViewProduct) {
+            return 99;
+        }
+        const parsedStock = parseInt(quickViewProduct.stock_quantity, 10);
+        if (!Number.isFinite(parsedStock) || parsedStock <= 0) {
+            return 99;
+        }
+        return parsedStock;
+    }
+
+    function updateQuickViewQuantityDisplay() {
+        const quantityInput = document.getElementById('quickViewQuantity');
+        if (quantityInput) {
+            quantityInput.value = quickViewQuantity;
+        }
+    }
+
+    function increaseQuickViewQuantity() {
+        if (!quickViewProduct || quickViewProduct.stock_status === 'out_of_stock') {
+            return;
+        }
+        const maxQuantity = getQuickViewMaxQuantity();
+        if (quickViewQuantity < maxQuantity) {
+            quickViewQuantity += 1;
+            updateQuickViewQuantityDisplay();
+        }
+    }
+
+    function decreaseQuickViewQuantity() {
+        if (quickViewQuantity > 1) {
+            quickViewQuantity -= 1;
+            updateQuickViewQuantityDisplay();
+        }
+    }
+
+    function handleQuickViewQuantityChange(event) {
+        const maxQuantity = getQuickViewMaxQuantity();
+        const value = parseInt(event?.target?.value, 10);
+        if (!Number.isFinite(value) || value < 1) {
+            quickViewQuantity = 1;
+        } else {
+            quickViewQuantity = Math.min(value, maxQuantity);
+        }
+        updateQuickViewQuantityDisplay();
+    }
+
+    async function quickViewAddToCart(productId) {
+        if (!productId || !quickViewProduct || quickViewProduct.stock_status === 'out_of_stock') {
+            return;
+        }
+        const quantityInput = document.getElementById('quickViewQuantity');
+        if (quantityInput) {
+            handleQuickViewQuantityChange({ target: quantityInput });
+        }
+        try {
+            await addToCart(productId, quickViewQuantity);
+        } finally {
+            closeQuickView();
         }
     }
 

@@ -1,4 +1,4 @@
-# 🏡 Jossie Fancies - Premium Home Goods E-commerce Platform
+# 🏡 Jossie SmartHome - Premium Home Goods E-commerce Platform
 
 [![Django](https://img.shields.io/badge/Django-5.2.4-092E20?style=flat&logo=django&logoColor=white)](https://djangoproject.com/)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)](https://python.org/)
@@ -6,7 +6,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-43853D?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)](https://sqlite.org/)
 
-A modern, full-featured e-commerce platform built for **Jossie Fancies**, specializing in premium home goods. Built with Django, Django REST Framework, and modern frontend technologies.
+A modern, full-featured e-commerce platform built for **Jossie SmartHome**, specializing in premium home goods. Built with Django, Django REST Framework, and modern frontend technologies.
 
 ## 🚀 **Live Demo**
 *[Add your deployment URL here]*
@@ -316,13 +316,13 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ## 📄 **License**
 
-This project is proprietary software owned by **Jossie Fancies**. All rights reserved.
+This project is proprietary software owned by **Jossie SmartHome**. All rights reserved.
 
 ---
 
 <div align="center">
 
-**Built with ❤️ by the Jossie Fancies Team**
+**Built with ❤️ by the Jossie SmartHome Team**
 
 *Bringing premium home goods to your doorstep*
 

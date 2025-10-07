@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from .models import Category, Product, ProductImage, Cart, CartItem, Order, OrderItem, StockHistory
 from .serializers import (
     CategorySerializer, ProductSerializer, ProductListSerializer,
@@ -357,6 +357,7 @@ def contact(request):
 
 @require_http_methods(["GET", "POST"])
 @csrf_protect
+@ensure_csrf_cookie
 @rate_limit_admin(max_attempts=5, window_minutes=15)
 @audit_log_admin(action="admin_login_page_access", sensitive=True)
 def admin_login(request):

@@ -1,4 +1,4 @@
-# Admin Security Setup Guide - Jossie Fancies E-commerce
+# Admin Security Setup Guide - Jossie SmartHome E-commerce
 
 ## 🔐 Security Overview
 

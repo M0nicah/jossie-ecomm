@@ -1,6 +1,6 @@
-# Contributing to Jossie Fancies
+# Contributing to Jossie SmartHome
 
-Thank you for your interest in contributing to the Jossie Fancies e-commerce platform! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to the Jossie SmartHome e-commerce platform! This document provides guidelines and information for contributors.
 
 ## 🚀 **Getting Started**
 
@@ -238,7 +238,7 @@ Any other relevant information
 - Ensure **mobile responsiveness**
 - Test **accessibility features**
 - Use **consistent spacing and colors**
-- Follow **Jossie Fancies brand guidelines**
+- Follow **Jossie SmartHome brand guidelines**
 
 ### Color Palette
 - **Primary Gold**: #A67C00
@@ -282,4 +282,4 @@ By contributing to this project, you agree that your contributions will be licen
 
 ---
 
-**Thank you for contributing to Jossie Fancies! Your efforts help us build better e-commerce experiences for everyone.** 🙏
+**Thank you for contributing to Jossie SmartHome! Your efforts help us build better e-commerce experiences for everyone.** 🙏

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Jossie Fancies</title>
+    <title>Admin Login - Jossie SmartHome</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -39,7 +39,7 @@
     <div class="w-full max-w-md">
         <!-- Logo -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-dark mb-2">Jossie Fancies</h1>
+            <h1 class="text-4xl font-bold text-dark mb-2">Jossie SmartHome</h1>
             <p class="text-gray-600">Admin Portal</p>
         </div>
         
@@ -161,24 +161,39 @@
             errorMessage.classList.add('hidden');
             
             try {
-                const response = await fetch('/admin/login/', {
+                const csrfToken = getCookie('csrftoken');
+                if (!csrfToken) {
+                    showError('Unable to verify your session. Please refresh the page and try again.');
+                    return;
+                }
+
+                const response = await fetch('/admin/api/login/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
+                        'X-CSRFToken': csrfToken
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({ username, password })
                 });
-                
-                const data = await response.json();
-                
-                if (data.success) {
+
+                let data = null;
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const rawText = await response.text();
+                    console.warn('Unexpected response type for admin login:', contentType, rawText?.slice?.(0, 200));
+                }
+
+                if (response.ok && data?.success) {
                     // Redirect to admin dashboard
                     window.location.href = data.redirect_url || '/admin-dashboard/';
                 } else {
-                    showError(data.message || 'Invalid credentials. Please try again.');
+                    const message = data?.message || (response.status === 403 ? 'Session expired. Please refresh and try again.' : 'Invalid credentials. Please try again.');
+                    showError(message);
                 }
-                
+
             } catch (error) {
                 console.error('Login error:', error);
                 showError('Network error. Please check your connection and try again.');

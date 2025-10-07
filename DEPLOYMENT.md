@@ -1,6 +1,6 @@
-# 🚀 Deployment Guide - Jossie Fancies
+# 🚀 Deployment Guide - Jossie SmartHome
 
-This guide covers deployment strategies for the Jossie Fancies e-commerce platform across different hosting providers and environments.
+This guide covers deployment strategies for the Jossie SmartHome e-commerce platform across different hosting providers and environments.
 
 ## 📋 **Pre-Deployment Checklist**
 
@@ -375,7 +375,7 @@ LOGGING = {
 #!/bin/bash
 # deploy.sh
 
-echo "🚀 Deploying Jossie Fancies to production..."
+echo "🚀 Deploying Jossie SmartHome to production..."
 
 # Pull latest code
 git pull origin main

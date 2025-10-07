@@ -1,4 +1,4 @@
-# CSS Development Guide - Jossie Fancies
+# CSS Development Guide - Jossie SmartHome
 
 This project uses **Tailwind CSS** with a proper build process instead of the CDN for production-ready performance.
 

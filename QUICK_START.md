@@ -1,6 +1,6 @@
-# 🚀 Quick Start Guide - Jossie Fancies
+# 🚀 Quick Start Guide - Jossie SmartHome
 
-Get the Jossie Fancies e-commerce platform up and running in minutes!
+Get the Jossie SmartHome e-commerce platform up and running in minutes!
 
 ## ⚡ **One-Command Setup**
 

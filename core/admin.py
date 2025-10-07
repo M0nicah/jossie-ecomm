@@ -165,6 +165,6 @@ class AdminUserAdmin(admin.ModelAdmin):
 
 
 # Customize admin site
-admin.site.site_header = "Jossie Fancies Admin"
-admin.site.site_title = "Jossie Fancies"
-admin.site.index_title = "Welcome to Jossie Fancies Administration"
+admin.site.site_header = "Jossie SmartHome Admin"
+admin.site.site_title = "Jossie SmartHome"
+admin.site.index_title = "Welcome to Jossie SmartHome Administration"

@@ -1,10 +1,10 @@
-# 🔒 Security Guide - Jossie Fancies
+# 🔒 Security Guide - Jossie SmartHome
 
-This document outlines security best practices, policies, and procedures for the Jossie Fancies e-commerce platform.
+This document outlines security best practices, policies, and procedures for the Jossie SmartHome e-commerce platform.
 
 ## 🛡️ **Security Overview**
 
-The Jossie Fancies platform implements multiple layers of security to protect customer data, business information, and system integrity.
+The Jossie SmartHome platform implements multiple layers of security to protect customer data, business information, and system integrity.
 
 ### **Security Principles**
 - **Defense in Depth**: Multiple security layers

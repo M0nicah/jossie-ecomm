@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ category.name }} - Jossie Fancies{% endblock %}
+{% block title %}{{ category.name }} - Jossie SmartHome{% endblock %}
 
 {% block content %}
 <!-- Page Header -->
@@ -184,6 +184,8 @@
     let hasMore = true;
     const categoryId = {{ category.id }};
     const categorySlug = '{{ category.slug }}';
+    let quickViewProduct = null;
+    let quickViewQuantity = 1;
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function () {
@@ -457,6 +459,19 @@
             showLoading(true);
             const product = await apiCall(`/api/products/${productId}/`);
 
+            if (!product) {
+                throw new Error('Product not found');
+            }
+
+            quickViewProduct = product;
+            quickViewQuantity = 1;
+            const isOutOfStock = product.stock_status === 'out_of_stock';
+            const parsedStockQuantity = parseInt(product.stock_quantity, 10);
+            const maxQuantityValue = Number.isFinite(parsedStockQuantity) && parsedStockQuantity > 0 ? parsedStockQuantity : null;
+            if (maxQuantityValue && quickViewQuantity > maxQuantityValue) {
+                quickViewQuantity = maxQuantityValue;
+            }
+
             const modal = document.getElementById('quickViewModal');
             const content = document.getElementById('quickViewContent');
 
@@ -473,7 +488,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <div class="mb-4">
-                            <img src="${product.primary_image?.optimized_image || product.primary_image?.image || '/static/images/placeholder.svg'}" 
+                            <img id="quickview-main-image" 
+                                 src="${product.primary_image?.optimized_image || product.primary_image?.image || '/static/images/placeholder.svg'}" 
                                  alt="${product.name}" loading="lazy" decoding="async"
                                  class="w-full h-80 object-cover rounded-lg">
                         </div>
@@ -482,8 +498,8 @@
                                 ${product.images.map(image => `
                                     <img src="${image.optimized_image || image.image}" 
                                          alt="${image.alt_text}" loading="lazy" decoding="async"
-                                         class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity"
-                                         onclick="changeMainImage('${image.image}')">
+                                         class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity border-2 border-transparent"
+                                         onclick="changeMainImage('${image.image}', this)">
                                 `).join('')}
                             </div>
                         ` : ''}
@@ -517,12 +533,21 @@
                                 ${product.dimensions ? `<p class="text-sm text-gray-600">Dimensions: ${product.dimensions}</p>` : ''}
                             </div>
                         ` : ''}
-                        
+
+                        <div class="mb-6">
+                            <span class="block text-sm font-medium text-gray-700 mb-2">Quantity</span>
+                            <div class="inline-flex items-center border border-orange/30 rounded-lg overflow-hidden bg-white ${isOutOfStock ? 'opacity-60 cursor-not-allowed' : ''}" ${isOutOfStock ? 'aria-disabled="true"' : ''}>
+                                <button type="button" onclick="decreaseQuickViewQuantity()" class="px-3 py-2 hover:bg-orange/10 transition-colors ${isOutOfStock ? 'cursor-not-allowed opacity-50' : ''}" ${isOutOfStock ? 'disabled' : ''}>-</button>
+                                <input type="number" id="quickViewQuantity" name="quickViewQuantity" min="1" value="${quickViewQuantity}" class="w-16 text-center border-0 focus:ring-0 py-2" ${isOutOfStock ? 'disabled' : ''} ${maxQuantityValue ? 'max="' + maxQuantityValue + '"' : ''}>
+                                <button type="button" onclick="increaseQuickViewQuantity()" class="px-3 py-2 hover:bg-orange/10 transition-colors ${isOutOfStock ? 'cursor-not-allowed opacity-50' : ''}" ${isOutOfStock ? 'disabled' : ''}>+</button>
+                            </div>
+                        </div>
+
                         <div class="flex space-x-4">
-                            <button onclick="addToCart(${product.id}); closeQuickView();" 
+                            <button onclick="quickViewAddToCart(${product.id})" 
                                     class="flex-1 bg-primary text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors font-semibold ${product.stock_status === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''}"
                                     ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}>
-                                Add to Cart
+                                ${product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
                             </button>
                         </div>
                         
@@ -533,6 +558,15 @@
                     </div>
                 </div>
             `;
+
+            if (!isOutOfStock) {
+                const quantityInput = document.getElementById('quickViewQuantity');
+                if (quantityInput) {
+                    quantityInput.addEventListener('change', handleQuickViewQuantityChange);
+                    quantityInput.addEventListener('input', handleQuickViewQuantityChange);
+                }
+            }
+            updateQuickViewQuantityDisplay();
 
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -546,14 +580,91 @@
     }
 
     function closeQuickView() {
-        document.getElementById('quickViewModal').classList.add('hidden');
+        const modal = document.getElementById('quickViewModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
         document.body.style.overflow = 'auto';
+        quickViewProduct = null;
+        quickViewQuantity = 1;
     }
 
-    function changeMainImage(imageUrl) {
-        const mainImage = document.querySelector('#quickViewContent img');
-        if (mainImage) {
+    function changeMainImage(imageUrl, clickedThumbnail) {
+        const mainImage = document.getElementById('quickview-main-image');
+        if (mainImage && imageUrl) {
             mainImage.src = imageUrl;
+            if (clickedThumbnail) {
+                const thumbnails = document.querySelectorAll('#quickViewContent .grid img');
+                thumbnails.forEach(thumb => {
+                    thumb.classList.remove('border-orange');
+                    thumb.classList.add('border-transparent');
+                });
+                clickedThumbnail.classList.remove('border-transparent');
+                clickedThumbnail.classList.add('border-orange');
+            }
+        }
+    }
+
+
+    function getQuickViewMaxQuantity() {
+        if (!quickViewProduct) {
+            return 99;
+        }
+        const parsedStock = parseInt(quickViewProduct.stock_quantity, 10);
+        if (!Number.isFinite(parsedStock) || parsedStock <= 0) {
+            return 99;
+        }
+        return parsedStock;
+    }
+
+    function updateQuickViewQuantityDisplay() {
+        const quantityInput = document.getElementById('quickViewQuantity');
+        if (quantityInput) {
+            quantityInput.value = quickViewQuantity;
+        }
+    }
+
+    function increaseQuickViewQuantity() {
+        if (!quickViewProduct || quickViewProduct.stock_status === 'out_of_stock') {
+            return;
+        }
+        const maxQuantity = getQuickViewMaxQuantity();
+        if (quickViewQuantity < maxQuantity) {
+            quickViewQuantity += 1;
+            updateQuickViewQuantityDisplay();
+        }
+    }
+
+    function decreaseQuickViewQuantity() {
+        if (quickViewQuantity > 1) {
+            quickViewQuantity -= 1;
+            updateQuickViewQuantityDisplay();
+        }
+    }
+
+    function handleQuickViewQuantityChange(event) {
+        const maxQuantity = getQuickViewMaxQuantity();
+        const value = parseInt(event?.target?.value, 10);
+        if (!Number.isFinite(value) || value < 1) {
+            quickViewQuantity = 1;
+        } else {
+            quickViewQuantity = Math.min(value, maxQuantity);
+        }
+        updateQuickViewQuantityDisplay();
+    }
+
+    async function quickViewAddToCart(productId) {
+        if (!productId || !quickViewProduct || quickViewProduct.stock_status === 'out_of_stock') {
+            return;
+        }
+        const quantityInput = document.getElementById('quickViewQuantity');
+        if (quantityInput) {
+            handleQuickViewQuantityChange({ target: quantityInput });
+        }
+        try {
+            await addToCart(productId, quickViewQuantity);
+        } finally {
+            closeQuickView();
         }
     }
 

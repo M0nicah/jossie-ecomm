@@ -866,6 +866,11 @@ class TemplateViewTest(TestCase):
             sku="PHONE001",
             stock_quantity=10
         )
+        self.admin_user = User.objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="adminpass123"
+        )
 
     def test_home_view(self):
         response = self.client.get('/')
@@ -925,6 +930,7 @@ class TemplateViewTest(TestCase):
         self.assertTemplateUsed(response, 'core/admin_login.html')
 
     def test_admin_dashboard_view(self):
+        self.client.force_login(self.admin_user)
         response = self.client.get('/admin-dashboard/')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'core/admin_dashboard.html')

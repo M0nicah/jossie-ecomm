@@ -378,7 +378,7 @@ LOGGING = {
 
 # WhatsApp Business Settings
 WHATSAPP_BUSINESS_NUMBER = config('WHATSAPP_BUSINESS_NUMBER', default='+254790420843')
-WHATSAPP_BUSINESS_NAME = config('WHATSAPP_BUSINESS_NAME', default='Jossie Fancies')
+WHATSAPP_BUSINESS_NAME = config('WHATSAPP_BUSINESS_NAME', default='Jossie SmartHome')
 
 # Email settings (for order notifications)
 # Use console backend for development, SMTP for production

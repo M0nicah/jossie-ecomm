@@ -1,7 +1,7 @@
 {
   "name": "jossie-fancies",
   "version": "1.0.1",
-  "description": "Django e-commerce site for Jossie Fancies",
+  "description": "Django e-commerce site for Jossie SmartHome",
   "main": "index.js",
   "scripts": {
     "dev": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch",
@@ -22,6 +22,6 @@
     "tailwindcss",
     "ecommerce"
   ],
-  "author": "Jossie Fancies",
+  "author": "Jossie SmartHome",
   "license": "ISC"
 }

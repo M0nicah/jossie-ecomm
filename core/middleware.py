@@ -29,7 +29,7 @@ class AdminSecurityMiddleware(MiddlewareMixin):
             '/admin-dashboard/',
             '/admin/',
             '/api/auth/login/',
-            '/admin/login/',
+            '/admin/api/login/',
         ]
         super().__init__(get_response)
 
@@ -47,9 +47,6 @@ class AdminSecurityMiddleware(MiddlewareMixin):
                 if self.is_rate_limited(client_ip):
                     logger.warning(f"Rate limit exceeded for IP {client_ip} on admin login")
                     return self.rate_limit_response(request)
-                
-                # Track login attempt
-                self.track_login_attempt(client_ip, request)
             
             # Check IP whitelist (if configured)
             if not self.is_ip_allowed(client_ip):
@@ -106,7 +103,7 @@ class AdminSecurityMiddleware(MiddlewareMixin):
 
     def is_login_path(self, path):
         """Check if the path is a login endpoint"""
-        login_paths = ['/admin-login/', '/admin/login/', '/api/auth/login/']
+        login_paths = ['/admin-login/', '/admin/api/login/', '/api/auth/login/']
         return any(path.startswith(login_path) for login_path in login_paths)
 
     def is_admin_dashboard(self, path):
@@ -177,11 +174,14 @@ class AdminSecurityMiddleware(MiddlewareMixin):
             logger.error(f"Invalid IP format: {ip}")
             return False
 
-    def track_login_attempt(self, ip, request):
-        """Track login attempts for rate limiting"""
+    def update_login_attempts(self, ip, success):
+        """Update login attempt counters based on success/failure"""
         cache_key = f"admin_login_attempts:{ip}"
-        attempts = cache.get(cache_key, 0)
-        cache.set(cache_key, attempts + 1, timeout=900)  # 15 minutes
+        if success:
+            cache.delete(cache_key)
+        else:
+            attempts = cache.get(cache_key, 0) + 1
+            cache.set(cache_key, attempts, timeout=900)  # 15 minutes
 
     def rate_limit_response(self, request):
         """Return rate limit exceeded response"""
@@ -207,19 +207,20 @@ class AdminSecurityMiddleware(MiddlewareMixin):
         username = 'Unknown'
         
         try:
-            if hasattr(response, 'content'):
+            if request.content_type == 'application/json' and hasattr(response, 'content'):
                 if response.status_code == 200:
-                    if request.content_type == 'application/json':
-                        try:
-                            content = json.loads(response.content)
-                            success = content.get('success', False)
-                        except (json.JSONDecodeError, AttributeError):
-                            pass
-                    else:
-                        # For non-JSON responses, assume success if user is authenticated after login
-                        success = (hasattr(request, 'user') and 
-                                 request.user.is_authenticated and 
-                                 request.user.is_superuser)
+                    try:
+                        content = json.loads(response.content)
+                        success = content.get('success', False)
+                    except (json.JSONDecodeError, AttributeError):
+                        pass
+
+            # Treat authenticated superuser after POST as a successful login regardless of redirect
+            if (request.method == 'POST' and
+                hasattr(request, 'user') and
+                request.user.is_authenticated and
+                request.user.is_superuser):
+                success = True
             
             # Try to get username from request
             if request.content_type == 'application/json':
@@ -247,9 +248,13 @@ class AdminSecurityMiddleware(MiddlewareMixin):
             logger.info(log_message)
         else:
             logger.warning(log_message)
-            
+
             # Track failed attempts for additional security
             self.track_failed_attempt(client_ip, username)
+
+        # Update rate-limiter counters based on outcome
+        if request.method == 'POST' and self.is_login_path(request.path):
+            self.update_login_attempts(client_ip, success)
 
     def track_failed_attempt(self, ip, username):
         """Track failed login attempts for security monitoring"""

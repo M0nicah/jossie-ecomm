@@ -5,7 +5,7 @@ from django.utils.text import slugify
 
 
 class Command(BaseCommand):
-    help = 'Populate initial data for Jossie Fancies'
+    help = 'Populate initial data for Jossie SmartHome'
 
     def handle(self, *args, **options):
         self.stdout.write('Creating initial data...')

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ product.name }} - Jossie Fancies{% endblock %}
+{% block title %}{{ product.name }} - Jossie SmartHome{% endblock %}
 
 {% block content %}
 <!-- Product Detail -->
@@ -126,7 +126,7 @@
                     
                     <!-- Additional Information -->
                     <div class="bg-blue-50 rounded-xl p-6">
-                        <h4 class="font-semibold text-dark mb-3">Why choose Jossie Fancies?</h4>
+                        <h4 class="font-semibold text-dark mb-3">Why choose Jossie SmartHome?</h4>
                         <ul class="space-y-2 text-sm text-gray-700">
                             <li class="flex items-center">
                                 <svg class="h-4 w-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -217,7 +217,7 @@
 
     function renderProduct(product) {
         // Update page title
-        document.title = `${product.name} - Jossie Fancies`;
+        document.title = `${product.name} - Jossie SmartHome`;
         
         // Update breadcrumb
         const categoryBreadcrumb = document.getElementById('categoryBreadcrumb').querySelector('a');

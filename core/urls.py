@@ -33,6 +33,6 @@ urlpatterns = [
     path('api/auth/user/', auth_views.current_user_view, name='api_current_user'),
     
     # Admin Authentication
-    path('admin/login/', auth_views.admin_login_view, name='admin_login_api'),
-    path('admin/logout/', auth_views.admin_logout_view, name='admin_logout_api'),
+    path('admin/api/login/', auth_views.admin_login_view, name='admin_login_api'),
+    path('admin/api/logout/', auth_views.admin_logout_view, name='admin_logout_api'),
 ]
