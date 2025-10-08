@@ -21,7 +21,6 @@ class WhatsAppService:
 📋 Order Details:
 • Order ID: {order.order_id}
 • Customer: {order.first_name} {order.last_name}
-• Email: {order.email}
 • Phone: {order.phone}
 
 📦 Items Ordered:"""
