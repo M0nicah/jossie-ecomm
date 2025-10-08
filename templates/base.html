@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     {% load static cache %}
     <title>{% block title %}Jossie SmartHome - Premium Home Goods{% endblock %}</title>
     
@@ -589,11 +590,12 @@
         // API helper functions
         async function apiCall(url, options = {}) {
             try {
+                const csrfToken = getCsrfToken();
                 const response = await fetch(url, {
                     ...options,
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
+                        ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
                         ...options.headers
                     }
                 });
@@ -666,6 +668,17 @@
                 }
             }
             return cookieValue;
+        }
+
+        function getCsrfToken() {
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            if (meta) {
+                const token = meta.getAttribute('content');
+                if (token && token !== 'NOTPROVIDED') {
+                    return token;
+                }
+            }
+            return getCookie('csrftoken');
         }
 
         // Load categories

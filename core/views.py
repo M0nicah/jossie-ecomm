@@ -1,9 +1,12 @@
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Q
 from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
@@ -16,7 +19,13 @@ from .serializers import (
 from .services import WhatsAppService, EmailService, OrderService
 from .decorators import (
     admin_required, secure_admin_view, standard_admin_view, 
-    rate_limit_admin, audit_log_admin
+    rate_limit_admin, audit_log_admin, get_client_ip
+)
+from .auth_views import (
+    track_admin_login_attempt,
+    track_failed_admin_login,
+    clear_failed_login_attempts,
+    is_admin_account_locked,
 )
 
 
@@ -362,7 +371,39 @@ def contact(request):
 @audit_log_admin(action="admin_login_page_access", sensitive=True)
 def admin_login(request):
     """Secure admin login page with rate limiting and audit logging"""
-    return render(request, 'core/admin_login.html')
+    error_message = None
+    client_ip = get_client_ip(request)
+    
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        
+        if not username or not password:
+            error_message = 'Username and password are required.'
+        else:
+            track_admin_login_attempt(client_ip, username, request)
+            user = authenticate(request, username=username, password=password)
+            
+            if user is not None and user.is_superuser and user.is_active:
+                if is_admin_account_locked(username):
+                    error_message = 'Account temporarily locked due to security policy.'
+                else:
+                    now_iso = timezone.now().isoformat()
+                    login(request, user)
+                    request.session['admin_session_start'] = now_iso
+                    request.session['last_activity'] = now_iso
+                    request.session['login_ip'] = client_ip
+                    request.session['is_admin_session'] = True
+                    clear_failed_login_attempts(client_ip, username)
+                    return redirect('admin_dashboard')
+            else:
+                track_failed_admin_login(client_ip, username)
+                error_message = 'Invalid credentials or insufficient permissions.'
+    
+    context = {
+        'error_message': error_message,
+    }
+    return render(request, 'core/admin_login.html', context)
 
 @standard_admin_view
 def admin_dashboard(request):

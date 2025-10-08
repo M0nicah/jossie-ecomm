@@ -55,12 +55,13 @@
                 <p class="text-gray-600 mt-2">Sign in to access the admin dashboard</p>
             </div>
             
-            <form id="loginForm" class="space-y-6">
+            <form id="loginForm" method="post" action="{% url 'admin_login' %}" class="space-y-6">
+                {% csrf_token %}
                 <!-- Username -->
                 <div>
                     <label for="username" class="block text-sm font-medium text-dark mb-2">Username</label>
                     <div class="relative">
-                        <input type="text" id="username" name="username" required 
+                        <input type="text" id="username" name="username" required value="{{ request.POST.username|default_if_none:'' }}"
                                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white/80 backdrop-blur-sm">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,6 +82,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                             </svg>
                         </div>
+                        <button type="button" id="togglePassword" aria-label="Toggle password visibility"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm font-medium text-primary/80 hover:text-primary">
+                            <span>Show</span>
+                        </button>
                     </div>
                 </div>
                 
@@ -93,9 +98,11 @@
                 </div>
                 
                 <!-- Error Message -->
-                <div id="errorMessage" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                    <!-- Error will be displayed here -->
+                {% if error_message %}
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    {{ error_message }}
                 </div>
+                {% endif %}
                 
                 <!-- Login Button -->
                 <button type="submit" id="loginBtn" 
@@ -143,98 +150,25 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const loginBtn = document.getElementById('loginBtn');
-            const loginBtnText = document.getElementById('loginBtnText');
-            const loginSpinner = document.getElementById('loginSpinner');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            // Show loading state
-            loginBtn.disabled = true;
-            loginBtnText.textContent = 'Signing In...';
-            loginSpinner.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
-            
-            try {
-                const csrfToken = getCookie('csrftoken');
-                if (!csrfToken) {
-                    showError('Unable to verify your session. Please refresh the page and try again.');
-                    return;
+        const usernameInput = document.getElementById('username');
+        if (usernameInput) {
+            usernameInput.focus();
+            usernameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('password').focus();
                 }
-
-                const response = await fetch('/admin/api/login/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken
-                    },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({ username, password })
-                });
-
-                let data = null;
-                const contentType = response.headers.get('content-type') || '';
-                if (contentType.includes('application/json')) {
-                    data = await response.json();
-                } else {
-                    const rawText = await response.text();
-                    console.warn('Unexpected response type for admin login:', contentType, rawText?.slice?.(0, 200));
-                }
-
-                if (response.ok && data?.success) {
-                    // Redirect to admin dashboard
-                    window.location.href = data.redirect_url || '/admin-dashboard/';
-                } else {
-                    const message = data?.message || (response.status === 403 ? 'Session expired. Please refresh and try again.' : 'Invalid credentials. Please try again.');
-                    showError(message);
-                }
-
-            } catch (error) {
-                console.error('Login error:', error);
-                showError('Network error. Please check your connection and try again.');
-            } finally {
-                // Reset button state
-                loginBtn.disabled = false;
-                loginBtnText.textContent = 'Sign In';
-                loginSpinner.classList.add('hidden');
-            }
-        });
-        
-        function showError(message) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = message;
-            errorMessage.classList.remove('hidden');
-        }
-        
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
+            });
         }
 
-        // Auto-focus username field
-        document.getElementById('username').focus();
-        
-        // Enter key navigation
-        document.getElementById('username').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('password').focus();
-            }
-        });
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        if (togglePasswordBtn) {
+            togglePasswordBtn.addEventListener('click', function() {
+                const passwordInput = document.getElementById('password');
+                const isHidden = passwordInput.type === 'password';
+                passwordInput.type = isHidden ? 'text' : 'password';
+                this.querySelector('span').textContent = isHidden ? 'Hide' : 'Show';
+            });
+        }
     </script>
 </body>
 </html>
