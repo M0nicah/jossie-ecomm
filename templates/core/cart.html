@@ -120,7 +120,7 @@ endblock %} {% block content %}
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Shipping</span>
-                <span class="font-semibold text-success">KSH 450.00</span>
+                <span class="font-semibold text-success">KSH 350.00</span>
               </div>
               <div class="border-t pt-4">
                 <div class="flex justify-between text-lg">
@@ -250,7 +250,7 @@ endblock %} {% block content %}
           </div>
           <div class="flex justify-between text-sm mb-1">
             <span>Shipping:</span>
-            <span class="text-success">KSH 450.00</span>
+            <span class="text-success">KSH 350.00</span>
           </div>
           <div class="border-t pt-2 mt-2">
             <div class="flex justify-between font-semibold">
@@ -529,7 +529,7 @@ endblock %} {% block content %}
     const modalTotal = document.getElementById("modalTotal");
 
     const subtotalPrice = parseFloat(currentCart.total_price || 0);
-    const shippingFee = 450.0;
+    const shippingFee = 350.0;
     const totalPrice = subtotalPrice + shippingFee;
 
     itemCount.textContent = currentCart.total_items || 0;
@@ -625,8 +625,8 @@ endblock %} {% block content %}
     const orderData = {
       first_name: firstName,
       last_name: lastName,
-      email: generatedEmail,
       phone: phoneNumber,
+      email: generatedEmail,
       notes,
     };
 

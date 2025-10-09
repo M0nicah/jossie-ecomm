@@ -9,13 +9,20 @@ from pathlib import Path
 from PIL import Image
 import uuid
 
-from cloudinary_storage.storage import MediaCloudinaryStorage
-
-
 def _cloudinary_storage_or_default():
-    if getattr(settings, 'USE_CLOUDINARY_STORAGE', False):
-        return MediaCloudinaryStorage()
-    return None
+    """Lazy import Cloudinary storage to avoid startup delay"""
+    if not getattr(settings, 'USE_CLOUDINARY_STORAGE', False):
+        return None
+    
+    # Cache the storage instance to avoid repeated imports
+    if not hasattr(_cloudinary_storage_or_default, '_storage'):
+        try:
+            from cloudinary_storage.storage import MediaCloudinaryStorage
+            _cloudinary_storage_or_default._storage = MediaCloudinaryStorage()
+        except ImportError:
+            _cloudinary_storage_or_default._storage = None
+    
+    return _cloudinary_storage_or_default._storage
 
 
 class Category(models.Model):

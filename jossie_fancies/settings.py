@@ -54,6 +54,26 @@ if not DEBUG:
 # Admin Security
 ADMIN_URL_PREFIX = config('ADMIN_URL_PREFIX', default='secure-admin-' + SECRET_KEY[:8])
 
+# Cloudinary configuration
+CLOUDINARY_URL = config('CLOUDINARY_URL', default='')
+CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME', default='')
+CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY', default='')
+CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET', default='')
+
+USE_CLOUDINARY_STORAGE = bool(
+    CLOUDINARY_URL or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+)
+
+# Cloudinary configuration
+CLOUDINARY_URL = config('CLOUDINARY_URL', default='')
+CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME', default='')
+CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY', default='')
+CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET', default='')
+ENABLE_CLOUDINARY = config('ENABLE_CLOUDINARY', default=False, cast=bool)
+
+USE_CLOUDINARY_STORAGE = ENABLE_CLOUDINARY and bool(
+    CLOUDINARY_URL or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+)
 
 # Application definition
 
@@ -66,10 +86,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'cloudinary_storage',
-    'cloudinary',
-    'core',
 ]
+
+if USE_CLOUDINARY_STORAGE:
+    INSTALLED_APPS += [
+        'cloudinary_storage',
+        'cloudinary',
+    ]
+
+INSTALLED_APPS += ['core']
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -81,8 +106,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.middleware.AdminSecurityMiddleware',
 ]
+
+# Add heavy security middleware only in production
+if not DEBUG:
+    MIDDLEWARE.append('core.middleware.AdminSecurityMiddleware')
 
 ROOT_URLCONF = 'jossie_fancies.urls'
 
@@ -165,28 +193,30 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# Whitenoise settings for serving static files
+# Simplified static files for development
 if DEBUG:
-    # Development: Use simpler storage
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+    # Development: Use Django's default static file handling
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    # Minimal Whitenoise configuration
+    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_AUTOREFRESH = True
 else:
     # Production: Use manifest storage for better caching
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Whitenoise configuration
-WHITENOISE_USE_FINDERS = DEBUG
-WHITENOISE_AUTOREFRESH = DEBUG  # Only auto-refresh in development
-WHITENOISE_MAX_AGE = 31536000  # 1 year cache
-WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'zip', 'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br']
+    WHITENOISE_USE_FINDERS = False
+    WHITENOISE_AUTOREFRESH = False
+    WHITENOISE_MAX_AGE = 31536000  # 1 year cache
+    WHITENOISE_SKIP_COMPRESS_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'zip', 'gz', 'tgz', 'bz2', 'tbz', 'xz', 'br']
 
 
-def add_custom_cache_headers(headers, path, url):
-    """Ensure long-lived caching headers for hashed static assets."""
-    if url.startswith(STATIC_URL):
-        headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+# Only add custom headers in production to avoid startup overhead
+if not DEBUG:
+    def add_custom_cache_headers(headers, path, url):
+        """Ensure long-lived caching headers for hashed static assets."""
+        if url.startswith(STATIC_URL):
+            headers['Cache-Control'] = 'public, max-age=31536000, immutable'
 
-
-WHITENOISE_ADD_HEADERS_FUNCTION = add_custom_cache_headers
+    WHITENOISE_ADD_HEADERS_FUNCTION = add_custom_cache_headers
 
 # Caching
 REDIS_CACHE_URL = config('REDIS_CACHE_URL', default='')
@@ -211,39 +241,34 @@ else:
         }
     }
 
-# Ensure CSS files are served with correct MIME type
-WHITENOISE_MIMETYPES = {
-    '.css': 'text/css',
-}
-
-# Additional static file configurations for production
+# Production-only optimizations
 if not DEBUG:
-    # Production-specific settings
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    
-    # Ensure static files are served correctly
-    import logging
-    logger = logging.getLogger(__name__)
-    logger.info(f"STATIC_ROOT: {STATIC_ROOT}")
-    logger.info(f"STATIC_URL: {STATIC_URL}")
-    logger.info(f"STATICFILES_DIRS: {STATICFILES_DIRS}")
+    # Ensure CSS files are served with correct MIME type
+    WHITENOISE_MIMETYPES = {
+        '.css': 'text/css',
+    }
 
 # Media files
-CLOUDINARY_URL = config('CLOUDINARY_URL', default='')
-CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME', default='')
-CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY', default='')
-CLOUDINARY_API_SECRET = config('CLOUDINARY_API_SECRET', default='')
-
-USE_CLOUDINARY_STORAGE = bool(
-    CLOUDINARY_URL or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
-)
-
 if USE_CLOUDINARY_STORAGE:
-    # Configure Cloudinary only when credentials are present
-    import cloudinary
-    import cloudinary.uploader
-    import cloudinary.api
+    # Lazy import Cloudinary to avoid startup delay
+    def configure_cloudinary():
+        import cloudinary
+        import cloudinary.uploader
+        import cloudinary.api
 
+        if CLOUDINARY_URL:
+            cloudinary.config(cloudinary_url=CLOUDINARY_URL)
+        else:
+            cloudinary.config(
+                cloud_name=CLOUDINARY_CLOUD_NAME,
+                api_key=CLOUDINARY_API_KEY,
+                api_secret=CLOUDINARY_API_SECRET,
+                secure=True
+            )
+        return cloudinary
+    
+    # Configure on first use rather than at import
+    import cloudinary
     if CLOUDINARY_URL:
         cloudinary.config(cloudinary_url=CLOUDINARY_URL)
     else:
@@ -264,21 +289,13 @@ if USE_CLOUDINARY_STORAGE:
     MEDIA_URL = config('MEDIA_URL', default='/media/')
     MEDIA_ROOT = ''
 
-    print(
-        "Cloudinary storage enabled. cloud_name=%s" % cloudinary.config().cloud_name
-    )
+    pass  # Cloudinary storage enabled
 else:
     # Local media files for development or when Cloudinary is not configured
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
 
-    print("Cloudinary storage disabled. Serving media from local MEDIA_ROOT %s" % MEDIA_ROOT)
-    
-    # Add error handling for media files in production
-    if not DEBUG:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.warning("Cloudinary not configured in production. Media files may not work properly.")
+    pass  # Using local media storage
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -321,60 +338,72 @@ LOGIN_URL = '/admin-login/'
 LOGIN_REDIRECT_URL = '/admin-dashboard/'
 LOGOUT_REDIRECT_URL = '/admin-login/'
 
-# Logging configuration for debugging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
+# Simplified logging for development
+if DEBUG:
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+            },
         },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
+        'root': {
+            'handlers': ['console'],
+            'level': 'WARNING',
         },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+    }
+else:
+    # Full logging for production
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'verbose': {
+                'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+                'style': '{',
+            },
         },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/tmp/django.log',
-            'maxBytes': 1024*1024*10,  # 10 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'verbose',
+            },
+            'file': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': '/tmp/django.log',
+                'maxBytes': 1024*1024*10,
+                'backupCount': 5,
+                'formatter': 'verbose',
+            },
         },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
+        'root': {
+            'handlers': ['console'],
             'level': 'INFO',
-            'propagate': False,
         },
-        'django.request': {
-            'handlers': ['console', 'file'],
-            'level': 'ERROR',
-            'propagate': False,
+        'loggers': {
+            'django': {
+                'handlers': ['console', 'file'],
+                'level': 'INFO',
+                'propagate': False,
+            },
+            'django.request': {
+                'handlers': ['console', 'file'],
+                'level': 'ERROR',
+                'propagate': False,
+            },
+            'core': {
+                'handlers': ['console', 'file'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'security': {
+                'handlers': ['console', 'file'],
+                'level': 'INFO',
+                'propagate': False,
+            },
         },
-        'core': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'security': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    },
-}
+    }
 
 # WhatsApp Business Settings
 WHATSAPP_BUSINESS_NUMBER = config('WHATSAPP_BUSINESS_NUMBER', default='+254790420843')

@@ -198,7 +198,7 @@
 
 <body class="font bg-white text-gray-800 min-h-screen">
     <!-- Top Bar -->
-    <div class=" text-white text-sm border-b border-gray-200 bg-gray-800">
+    <div class=" text-white text-sm border-b border-gray-200 bg-gray-800 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-10">
                 <div class="flex items-center space-x-4">
@@ -271,7 +271,7 @@
                                 class="absolute bottom-0 left-0 w-0 h-0.5 bg-orange transition-all group-hover:w-full"></span>
                         </button>
                         <div id="categoryDropdown"
-                            class="absolute top-full left-0 mt-2 w-64 bg-white/30 backdrop-blur-md rounded-xl py-4 opacity-0 invisible transform scale-95 transition-all duration-300 z-50 shadow-lg border border-gray-200">
+                            class="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl py-4 opacity-0 invisible transform scale-95 transition-all duration-300 z-50 shadow-lg border border-gray-200">
                             <div id="categoryMenu" class="grid grid-cols-1 gap-1">
                                 <!-- Categories will be loaded here -->
                             </div>
@@ -337,7 +337,7 @@
         </div>
 
         <!-- Mobile menu -->
-        <div id="mobileMenu" class="hidden md:hidden border-t bg-black/50 border-orange/20 shadow-xl">
+        <div id="mobileMenu" class="hidden md:hidden border-t bg-white border-orange/20 shadow-xl">
             <div class="px-4 pt-6 pb-8 space-y-6 ">
                 <!-- Main Navigation -->
                 <div class="space-y-2 bg-white/10 backdrop-blur-lg ">
@@ -999,7 +999,8 @@
             }
 
             try {
-                const products = await apiCall(`/api/products/?search=${encodeURIComponent(query)}&limit=5`);
+                const response = await apiCall(`/api/products/?search=${encodeURIComponent(query)}&limit=5`);
+                const { data: products } = normalizeApiResponse(response);
 
                 if (products.length === 0) {
                     resultsContainer.innerHTML = '<p class="text-golden/50 text-center py-4">No products found</p>';
