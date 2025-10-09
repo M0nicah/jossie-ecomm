@@ -285,7 +285,10 @@ class StockHistoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def home(request):
-    return render(request, 'core/home.html')
+    context = {
+        'whatsapp_number': settings.WHATSAPP_BUSINESS_NUMBER,
+    }
+    return render(request, 'core/home.html', context)
 
 def products(request):
     # Get all active products with related data
@@ -341,6 +344,7 @@ def products(request):
             'sort': sort_by,
         },
         'total_products': queryset.count(),
+        'whatsapp_number': settings.WHATSAPP_BUSINESS_NUMBER,
     }
     
     return render(request, 'core/products.html', context)
@@ -350,7 +354,11 @@ def product_detail(request, slug):
 
 def category(request, slug):
     category = get_object_or_404(Category, slug=slug, is_active=True)
-    return render(request, 'core/category.html', {'category': category})
+    context = {
+        'category': category,
+        'whatsapp_number': settings.WHATSAPP_BUSINESS_NUMBER,
+    }
+    return render(request, 'core/category.html', context)
 
 def cart(request):
     return render(request, 'core/cart.html')

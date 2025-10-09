@@ -186,6 +186,7 @@
     const categorySlug = '{{ category.slug }}';
     let quickViewProduct = null;
     let quickViewQuantity = 1;
+    const whatsappNumber = "{{ whatsapp_number|default:'+254790420843'|escapejs }}";
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function () {
@@ -544,10 +545,11 @@
                         </div>
 
                         <div class="flex space-x-4">
-                            <button onclick="quickViewAddToCart(${product.id})" 
+                            <button onclick="quickViewPlaceOrder(${product.id})" 
                                     class="flex-1 bg-primary text-white py-3 px-6 rounded-lg hover:bg-orange-600 transition-colors font-semibold ${product.stock_status === 'out_of_stock' ? 'opacity-50 cursor-not-allowed' : ''}"
-                                    ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}>
-                                ${product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
+                                    ${product.stock_status === 'out_of_stock' ? 'disabled' : ''}
+                                    aria-label="Place WhatsApp order">
+                                ${product.stock_status === 'out_of_stock' ? 'Out of Stock' : 'Place Order on WhatsApp'}
                             </button>
                         </div>
                         
@@ -653,21 +655,51 @@
         updateQuickViewQuantityDisplay();
     }
 
-    async function quickViewAddToCart(productId) {
-        if (!productId || !quickViewProduct || quickViewProduct.stock_status === 'out_of_stock') {
+    function quickViewPlaceOrder(productId) {
+        if (!productId || !quickViewProduct) {
+            return;
+        }
+        if (quickViewProduct.id !== productId) {
+            return;
+        }
+        if (quickViewProduct.stock_status === 'out_of_stock') {
+            showToast('Sorry, this product is currently out of stock.', 'error');
             return;
         }
         const quantityInput = document.getElementById('quickViewQuantity');
         if (quantityInput) {
             handleQuickViewQuantityChange({ target: quantityInput });
         }
-        try {
-            await addToCart(productId, quickViewQuantity);
-        } finally {
-            closeQuickView();
+        const quantity = quickViewQuantity || 1;
+        const cleanNumber = (whatsappNumber || '').replace(/[^0-9]/g, '');
+        if (!cleanNumber) {
+            showToast('WhatsApp contact unavailable.', 'error');
+            return;
         }
+        const unitPrice = parseFloat(quickViewProduct.price) || 0;
+        const totalPrice = unitPrice * quantity;
+        const formattedUnit = unitPrice.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formattedTotal = totalPrice.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const productName = quickViewProduct.name || 'Product';
+        const skuLine = quickViewProduct.sku ? `SKU: ${quickViewProduct.sku}\n` : '';
+        const message = `Hi, I'm interested in ordering this item from Jossie SmartHome:\n\n${skuLine}Product: ${productName}\nQuantity: ${quantity}\nPrice per unit: KES ${formattedUnit}\nEstimated total: KES ${formattedTotal}\n\nPlease confirm availability and advise on next steps.\nThank you!`;
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodedMessage}`;
+        openQuickViewWhatsAppLink(whatsappUrl);
+        closeQuickView();
+        showToast('Opening WhatsApp...', 'success');
     }
 
+    function openQuickViewWhatsAppLink(url) {
+        try {
+            const newWindow = window.open(url, '_blank');
+            if (!newWindow) {
+                window.location.href = url;
+            }
+        } catch (error) {
+            window.location.href = url;
+        }
+    }
     function clearFilters() {
         document.getElementById('searchInput').value = '';
         document.getElementById('sortFilter').value = 'name';
