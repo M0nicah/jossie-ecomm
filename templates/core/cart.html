@@ -703,9 +703,7 @@ endblock %} {% block content %}
       const additionalNotes = (order.notes || "").trim();
 
       const messageSections = [
-        `Hello ${businessName} team,`,
-        "",
-        "I would like to confirm the order I just placed on the website.",
+        `Hello ${businessName}, order placed and ready for confirmation.`,
         "",
         "Order summary:",
         `- Reference: ${order.order_id}`,
@@ -730,10 +728,7 @@ endblock %} {% block content %}
 
       messageSections.push(
         "",
-        "Please confirm availability and advise on payment and delivery next steps.",
-        "",
-        "Regards,",
-        customerName
+        "Confirm availability and share payment/delivery steps."
       );
 
       const message = messageSections.join("\n");

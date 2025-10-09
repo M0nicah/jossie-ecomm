@@ -27,9 +27,7 @@ class WhatsAppService:
         business_name = getattr(settings, "WHATSAPP_BUSINESS_NAME", "Jossie SmartHome")
 
         lines = [
-            f"Hello {business_name} team,",
-            "",
-            "I would like to confirm the order I just placed on the website.",
+            f"Hello {business_name}, order placed and ready for confirmation.",
             "",
             "Order summary:",
             f"- Reference: {order.order_id}",
@@ -61,10 +59,7 @@ class WhatsAppService:
 
         lines.extend([
             "",
-            "Please confirm availability and advise on payment and delivery next steps.",
-            "",
-            "Regards,",
-            customer_name,
+            "Confirm availability and share payment/delivery steps.",
         ])
 
         return "\n".join(lines)
