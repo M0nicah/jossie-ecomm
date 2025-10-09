@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from core.models import Category, Product, AdminUser
@@ -7,7 +8,20 @@ from django.utils.text import slugify
 class Command(BaseCommand):
     help = 'Populate initial data for Jossie SmartHome'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--force',
+            action='store_true',
+            help='Force populate sample data even when disabled via settings.'
+        )
+
     def handle(self, *args, **options):
+        if not settings.DEBUG and not options.get('force'):
+            self.stdout.write(self.style.WARNING(
+                'Sample data creation skipped: running in production mode.'
+            ))
+            return
+
         self.stdout.write('Creating initial data...')
         
         # Create categories

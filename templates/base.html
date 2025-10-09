@@ -230,22 +230,21 @@
     <!-- Main Navigation -->
     <nav class=" bg-white/70 backdrop-blur-lg sticky top-0 z-50 ">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
+            <div class="flex items-center justify-between gap-3 sm:gap-4 h-16 md:h-20 md:grid md:grid-cols-[max-content,1fr,max-content] md:gap-6">
                 <!-- Logo -->
-                <div class="flex items-center">
-                    <a href="{% url 'home' %}" class="flex-shrink-0 flex items-center group">
+                <div class="flex items-center min-w-0 flex-1 md:flex-none md:justify-self-start">
+                    <a href="{% url 'home' %}" class="flex items-center group">
                         <img src="{% static 'images/logo.jpg' %}" alt="Jossie SmartHome Logo" loading="lazy" decoding="async"
-                             class="w-12 h-12 rounded-full mr-3 glow-orange group-hover:hover-glow transition-all duration-300 object-cover">
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-800 group-hover:text-orange transition-colors">
+                             class="w-10 h-10 sm:w-12 sm:h-12 rounded-full lg:mr-3 glow-orange group-hover:hover-glow transition-all duration-300 object-cover flex-shrink-0">
+                        <div class="leading-tight min-w-0 hidden lg:block">
+                            <h1 class="text-xl font-bold text-gray-800 group-hover:text-orange transition-colors truncate">
                                 Jossie SmartHome</h1>
-                            <p class="text-xs text-gray-500">Premium Home Goods</p>
                         </div>
                     </a>
                 </div>
 
                 <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                <div class="hidden md:flex w-full items-center justify-center gap-4 lg:gap-6">
                     <a href="{% url 'home' %}"
                         class="nav-link text-gray-700 hover:text-orange transition-colors font-medium relative group">
                         Home
@@ -298,7 +297,7 @@
                 </div>
 
                 <!-- Right Side Actions -->
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center justify-end gap-2 md:gap-3 lg:gap-4 min-w-0 flex-1 md:flex-none md:justify-self-end">
                     <!-- Search -->
                     <button onclick="toggleSearch()"
                         class="p-2 text-gray-600 hover:text-orange transition-colors hover:bg-gray-50 rounded-lg">
@@ -369,7 +368,7 @@
                 <div class="border-t border-orange/20 pt-4">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-bold text-gray-800">Shop by Category</h3>
-                        <button onclick="toggleMobileCategorySection()" id="mobileCategoryToggle"
+                        <button onclick="toggleMobileCategorySection()" id="mobileCategoryToggle" aria-expanded="false" aria-controls="mobileCategorySection"
                             class="p-2 hover:bg-orange/10 rounded-lg transition-colors border border-transparent hover:border-orange/20">
                             <svg id="mobileCategoryArrow" class="h-5 w-5 text-gray-600 transition-transform" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
@@ -378,7 +377,7 @@
                             </svg>
                         </button>
                     </div>
-                    <div id="mobileCategorySection" class="space-y-1.5">
+                    <div id="mobileCategorySection" class="space-y-1.5 hidden">
                         <div id="mobileCategoryMenu" class="grid grid-cols-1 gap-1.5">
                             <!-- Categories will be loaded here -->
                         </div>
@@ -955,18 +954,30 @@
             menu.classList.toggle('hidden');
             menuIcon.classList.toggle('hidden');
             closeIcon.classList.toggle('hidden');
+
+            if (menu.classList.contains('hidden')) {
+                const section = document.getElementById('mobileCategorySection');
+                const arrow = document.getElementById('mobileCategoryArrow');
+                const toggle = document.getElementById('mobileCategoryToggle');
+                section?.classList.add('hidden');
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
+                if (toggle) toggle.setAttribute('aria-expanded', 'false');
+            }
         }
 
         function toggleMobileCategorySection() {
             const section = document.getElementById('mobileCategorySection');
             const arrow = document.getElementById('mobileCategoryArrow');
+            const toggle = document.getElementById('mobileCategoryToggle');
 
             if (section.classList.contains('hidden')) {
                 section.classList.remove('hidden');
                 arrow.style.transform = 'rotate(180deg)';
+                if (toggle) toggle.setAttribute('aria-expanded', 'true');
             } else {
                 section.classList.add('hidden');
                 arrow.style.transform = 'rotate(0deg)';
+                if (toggle) toggle.setAttribute('aria-expanded', 'false');
             }
         }
 

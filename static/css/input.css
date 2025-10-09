@@ -108,7 +108,7 @@
 
 /* Custom nav link animations */
 .nav-link {
-    @apply relative;
+    @apply relative whitespace-nowrap;
 }
 
 .nav-link::after {
