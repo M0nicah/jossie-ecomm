@@ -72,8 +72,13 @@ ls -la staticfiles/
 echo "Running static files debug..."
 python debug_static.py
 
-# Create sample data for production
-echo "Creating sample data..."
-python manage.py populate_data
+# Create sample data only for debug/local environments
+echo "Checking if sample data should be created..."
+if python manage.py shell -c "from django.conf import settings; import sys; sys.exit(0 if settings.DEBUG else 1)"; then
+    echo "Creating sample data (DEBUG=True)..."
+    python manage.py populate_data
+else
+    echo "Skipping sample data creation (DEBUG=False)."
+fi
 
 echo "Build completed successfully!"

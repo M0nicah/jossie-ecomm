@@ -697,11 +697,13 @@ class WhatsAppServiceTest(TestCase):
 
     def test_generate_order_message(self):
         message = WhatsAppService.generate_order_message(self.order)
-        self.assertIn("Order ID:", message)
+        self.assertIn("Order summary:", message)
         self.assertIn("John Doe", message)
         self.assertIn("Smartphone", message)
         self.assertIn("KES 25,000", message)
-        self.assertIn("Test delivery", message)
+        self.assertIn("Total payable: KES 25,450", message)
+        self.assertNotIn("🛍️", message)
+        self.assertNotIn("🙏", message)
 
     def test_generate_whatsapp_url(self):
         url = WhatsAppService.generate_whatsapp_url(self.order)

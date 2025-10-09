@@ -684,42 +684,59 @@ endblock %} {% block content %}
       targetUrl = order.whatsapp_url;
       console.log("Using backend WhatsApp URL");
     } else {
-      // Fallback: create our own message
+      // Fallback: create a professional customer-facing message
       console.log("Creating fallback WhatsApp message");
-      const message = `Good day,
 
-I would like to place the following order through your website:
+      const businessName = "Jossie SmartHome";
+      const formatCurrency = (value) =>
+        Number(value || 0).toLocaleString("en-US", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });
 
-ORDER SUMMARY
-Reference: ${order.order_id}
-Date: ${new Date().toLocaleDateString()}
+      const itemLines = (order.items || []).map((item, index) => {
+        const price = formatCurrency(item.product_price);
+        return `${index + 1}. ${item.product_name} — Qty ${item.quantity} @ KES ${price}`;
+      });
 
-CUSTOMER INFORMATION
-Name: ${customerName}
-Phone: ${order.phone}
+      const deliveryNotes = (order.delivery_notes || "").trim();
+      const additionalNotes = (order.notes || "").trim();
 
-ITEMS ORDERED
-${order.items
-  .map(
-    (item, index) => `${index + 1}. ${item.product_name}
-   Quantity: ${item.quantity}
-   Price: KSH ${parseFloat(item.product_price).toLocaleString("en-US", {
-     minimumFractionDigits: 2,
-     maximumFractionDigits: 2,
-   })}`
-  )
-  .join("\n\n")}
+      const messageSections = [
+        `Hello ${businessName} team,`,
+        "",
+        "I would like to confirm the order I just placed on the website.",
+        "",
+        "Order summary:",
+        `- Reference: ${order.order_id}`,
+        `- Customer: ${customerName}`,
+        `- Contact number: ${order.phone}`,
+        "",
+        "Items:",
+        ...itemLines,
+        "",
+        `Subtotal: KES ${formatCurrency(order.subtotal_amount)}`,
+        `Shipping: KES ${formatCurrency(order.shipping_fee)}`,
+        `Total payable: KES ${formatCurrency(order.total_amount)}`,
+      ];
 
-TOTAL AMOUNT: KSH ${parseFloat(order.total_amount).toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}
+      if (deliveryNotes) {
+        messageSections.push("", "Delivery instructions:", deliveryNotes);
+      }
 
-${order.notes ? `DELIVERY NOTES: ${order.notes}` : ""}
+      if (additionalNotes) {
+        messageSections.push("", "Additional notes:", additionalNotes);
+      }
 
-Please confirm receipt of this order and provide payment instructions.
+      messageSections.push(
+        "",
+        "Please confirm availability and advise on payment and delivery next steps.",
+        "",
+        "Regards,",
+        customerName
+      );
 
-Thank you.`;
+      const message = messageSections.join("\n");
 
       const encodedMessage = encodeURIComponent(message);
       const whatsappNumber = order.whatsapp_number || "+254790420843";

@@ -75,6 +75,8 @@ USE_CLOUDINARY_STORAGE = ENABLE_CLOUDINARY and bool(
     CLOUDINARY_URL or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
 )
 
+LIGHTWEIGHT_CLI = config('LIGHTWEIGHT_CLI', default=False, cast=bool) or bool(os.environ.get('DJANGO_LIGHTWEIGHT_CLI'))
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -250,11 +252,17 @@ if not DEBUG:
 
 # Media files
 if USE_CLOUDINARY_STORAGE:
-    # Lazy import Cloudinary to avoid startup delay
     def configure_cloudinary():
-        import cloudinary
-        import cloudinary.uploader
-        import cloudinary.api
+        """Import and configure Cloudinary only when storage is actually needed."""
+        try:
+            import cloudinary  # type: ignore
+        except ImportError as exc:
+            raise RuntimeError(
+                "Cloudinary storage is enabled but the 'cloudinary' package is not installed."
+            ) from exc
+
+        if getattr(configure_cloudinary, "_configured", False):
+            return cloudinary
 
         if CLOUDINARY_URL:
             cloudinary.config(cloudinary_url=CLOUDINARY_URL)
@@ -263,28 +271,18 @@ if USE_CLOUDINARY_STORAGE:
                 cloud_name=CLOUDINARY_CLOUD_NAME,
                 api_key=CLOUDINARY_API_KEY,
                 api_secret=CLOUDINARY_API_SECRET,
-                secure=True
+                secure=True,
             )
+
+        globals()["CLOUDINARY_STORAGE"] = {
+            "CLOUD_NAME": cloudinary.config().cloud_name,
+            "API_KEY": cloudinary.config().api_key,
+            "API_SECRET": cloudinary.config().api_secret,
+        }
+        configure_cloudinary._configured = True
         return cloudinary
-    
-    # Configure on first use rather than at import
-    import cloudinary
-    if CLOUDINARY_URL:
-        cloudinary.config(cloudinary_url=CLOUDINARY_URL)
-    else:
-        cloudinary.config(
-            cloud_name=CLOUDINARY_CLOUD_NAME,
-            api_key=CLOUDINARY_API_KEY,
-            api_secret=CLOUDINARY_API_SECRET,
-            secure=True
-        )
 
-    CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': cloudinary.config().cloud_name,
-        'API_KEY': cloudinary.config().api_key,
-        'API_SECRET': cloudinary.config().api_secret,
-    }
-
+    CONFIGURE_CLOUDINARY = configure_cloudinary
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     MEDIA_URL = config('MEDIA_URL', default='/media/')
     MEDIA_ROOT = ''
@@ -296,6 +294,32 @@ else:
     MEDIA_ROOT = BASE_DIR / 'media'
 
     pass  # Using local media storage
+
+# Lightweight CLI configuration to speed up management commands
+if LIGHTWEIGHT_CLI:
+    USE_CLOUDINARY_STORAGE = False
+    ENABLE_CLOUDINARY = False
+    CONFIGURE_CLOUDINARY = None
+
+    EXCLUDED_APPS = {
+        'cloudinary_storage',
+        'cloudinary',
+        'corsheaders',
+        'django.contrib.admindocs',
+    }
+    INSTALLED_APPS = [app for app in INSTALLED_APPS if app not in EXCLUDED_APPS]
+
+    MIDDLEWARE = [
+        middleware for middleware in MIDDLEWARE
+        if not middleware.endswith('AdminSecurityMiddleware')
+    ]
+
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_AUTOREFRESH = True
+
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

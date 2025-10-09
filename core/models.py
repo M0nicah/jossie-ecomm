@@ -17,6 +17,9 @@ def _cloudinary_storage_or_default():
     # Cache the storage instance to avoid repeated imports
     if not hasattr(_cloudinary_storage_or_default, '_storage'):
         try:
+            configure = getattr(settings, 'CONFIGURE_CLOUDINARY', None)
+            if callable(configure):
+                configure()
             from cloudinary_storage.storage import MediaCloudinaryStorage
             _cloudinary_storage_or_default._storage = MediaCloudinaryStorage()
         except ImportError:

@@ -16,37 +16,58 @@ class WhatsAppService:
     @staticmethod
     def generate_order_message(order) -> str:
         """Generate WhatsApp message for order"""
-        message = f"""🛍️ New Order - {settings.WHATSAPP_BUSINESS_NAME}
+        def format_currency(amount):
+            try:
+                value = int(amount)
+            except (TypeError, ValueError):
+                value = 0
+            return f"KES {value:,}"
 
-📋 Order Details:
-• Order ID: {order.order_id}
-• Customer: {order.first_name} {order.last_name}
-• Phone: {order.phone}
+        customer_name = (order.full_name or f"{order.first_name} {order.last_name}").strip() or "Customer"
+        business_name = getattr(settings, "WHATSAPP_BUSINESS_NAME", "Jossie SmartHome")
 
-📦 Items Ordered:"""
-        
-        for item in order.items.all():
-            message += f"\n• {item.product_name} x{item.quantity} - KES {int(item.product_price):,}"
-        
-        message += f"""
+        lines = [
+            f"Hello {business_name} team,",
+            "",
+            "I would like to confirm the order I just placed on the website.",
+            "",
+            "Order summary:",
+            f"- Reference: {order.order_id}",
+            f"- Customer: {customer_name}",
+            f"- Contact number: {order.phone}",
+            "",
+            "Items:"
+        ]
 
-💰 Subtotal: KES {int(order.subtotal_amount):,}
-🚚 Shipping: KES {int(order.shipping_fee):,}
-💰 Total Amount: KES {int(order.total_amount):,}
+        for index, item in enumerate(order.items.all(), start=1):
+            lines.append(
+                f"{index}. {item.product_name} — Qty {item.quantity} @ {format_currency(item.product_price)}"
+            )
 
-📍 Delivery Instructions:
-{order.delivery_notes}"""
+        lines.extend([
+            "",
+            f"Subtotal: {format_currency(order.subtotal_amount)}",
+            f"Shipping: {format_currency(order.shipping_fee)}",
+            f"Total payable: {format_currency(order.total_amount)}",
+        ])
 
-        if order.notes:
-            message += f"\n\n📝 Special Instructions:\n{order.notes}"
-        
-        message += f"""
+        delivery_notes = (order.delivery_notes or "").strip()
+        if delivery_notes:
+            lines.extend(["", "Delivery instructions:", delivery_notes])
 
-✅ Please confirm this order to proceed with payment and delivery.
+        additional_notes = (order.notes or "").strip()
+        if additional_notes:
+            lines.extend(["", "Additional notes:", additional_notes])
 
-Thank you for choosing {settings.WHATSAPP_BUSINESS_NAME}! 🙏"""
-        
-        return message
+        lines.extend([
+            "",
+            "Please confirm availability and advise on payment and delivery next steps.",
+            "",
+            "Regards,",
+            customer_name,
+        ])
+
+        return "\n".join(lines)
     
     @staticmethod
     def generate_whatsapp_url(order) -> str:
