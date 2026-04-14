@@ -9,7 +9,7 @@
 A modern, full-featured e-commerce platform built for **Jossie SmartHome**, specializing in premium home goods. Built with Django, Django REST Framework, and modern frontend technologies.
 
 ## 🚀 **Live Demo**
-*[Add your deployment URL here]*
+*[jossiefancies.onrender.com/]*
 
 ## 📋 **Table of Contents**
 - [Features](#-features)
